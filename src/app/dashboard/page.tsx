@@ -2,10 +2,16 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserRole } from "@/lib/auth/getUserRole";
 import FundChart from "@/components/charts/FundChart";
 import FundPieChart from "@/components/charts/FundPieChart";
+import UserAllocationChart from "@/components/charts/UserAllocationChart";
 import DashboardTabs from "@/components/layouts/DashboardTabs";
 import { Tables } from "@/types/supabase";
 
 type Sponsor = Tables<"sponsors">;
+type Allocation = {
+  user_email: string;
+  amount: number;
+  user_display_name: string | null;
+};
 
 function groupByDate(
   data: { amount: number; created_at?: string | null; date?: string | null }[],
@@ -29,24 +35,33 @@ export default async function PublicDashboard() {
   const supabase = createClient();
   const role = await getUserRole(supabase);
 
-  const [donationRes, expenseRes, sponsorRes] = await Promise.all([
-    supabase.from("donations").select("amount, created_at").order("created_at"),
-    supabase.from("expenses").select("amount, date").order("date"),
-    supabase
-      .from("sponsors")
-      .select("sponsor_name, amount, category")
-      .order("created_at", { ascending: false }),
-  ]);
+  const [donationRes, expenseRes, sponsorRes, allocationRes] =
+    await Promise.all([
+      supabase
+        .from("donations")
+        .select("amount, created_at")
+        .order("created_at"),
+      supabase.from("expenses").select("amount, date").order("date"),
+      supabase
+        .from("sponsors")
+        .select("sponsor_name, amount, category")
+        .order("created_at", { ascending: false }),
+      role === "admin"
+        ? supabase.rpc("get_allocations_with_emails")
+        : Promise.resolve({ data: [], error: null }),
+    ]);
 
   const donations = donationRes.data || [];
   const expenses =
     (expenseRes.data as { amount: number; date?: string | null }[]) || [];
   const sponsors = (sponsorRes.data as Sponsor[]) || [];
+  const allocations = (allocationRes.data as Allocation[]) || [];
 
-  if (donationRes.error || sponsorRes.error) {
+  if (donationRes.error || sponsorRes.error || allocationRes.error) {
     console.error("❌ Supabase errors:", {
       donationError: donationRes.error?.message,
       sponsorError: sponsorRes.error?.message,
+      allocationError: allocationRes.error?.message,
     });
 
     return (
@@ -204,33 +219,48 @@ export default async function PublicDashboard() {
   ];
 
   if (role === "admin") {
-    tabs.push({
-      label: "Sponsors",
-      content: (
-        <div>
-          <h2 className="text-sm font-semibold mb-2">Recent Secret Sponsors</h2>
-          <ul className="space-y-2">
-            {sponsors.slice(0, 5).map((s: Sponsor, idx) => (
-              <li key={idx} className="bg-white rounded-lg shadow p-3 border">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <span className="font-medium">
-                      {s.sponsor_name || "Anonymous"}
+    tabs.push(
+      {
+        label: "Sponsors",
+        content: (
+          <div>
+            <h2 className="text-sm font-semibold mb-2">
+              Recent Secret Sponsors
+            </h2>
+            <ul className="space-y-2">
+              {sponsors.slice(0, 5).map((s: Sponsor, idx) => (
+                <li key={idx} className="bg-white rounded-lg shadow p-3 border">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="font-medium">
+                        {s.sponsor_name || "Anonymous"}
+                      </span>
+                      <p className="text-xs text-muted-foreground">
+                        {s.category}
+                      </p>
+                    </div>
+                    <span className="text-sm text-primary font-semibold">
+                      ₹{s.amount}
                     </span>
-                    <p className="text-xs text-muted-foreground">
-                      {s.category}
-                    </p>
                   </div>
-                  <span className="text-sm text-primary font-semibold">
-                    ₹{s.amount}
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ),
-    });
+                </li>
+              ))}
+            </ul>
+          </div>
+        ),
+      },
+      {
+        label: "Allocations",
+        content: (
+          <div>
+            <h2 className="text-sm font-semibold mb-2">
+              User Fund Allocations
+            </h2>
+            <UserAllocationChart data={allocations} />
+          </div>
+        ),
+      },
+    );
   }
 
   return (

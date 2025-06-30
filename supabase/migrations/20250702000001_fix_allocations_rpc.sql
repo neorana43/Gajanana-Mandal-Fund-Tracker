@@ -9,7 +9,9 @@ CREATE OR REPLACE FUNCTION get_allocations_with_emails () RETURNS TABLE (
   user_id uuid,
   admin_id uuid,
   user_email text,
-  admin_email text
+  admin_email text,
+  user_display_name text,
+  admin_display_name text
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -20,7 +22,9 @@ BEGIN
         ua.user_id,
         ua.admin_id,
         u.email::text AS user_email,
-        a.email::text AS admin_email
+        a.email::text AS admin_email,
+        u.raw_user_meta_data->>'display_name' AS user_display_name,
+        a.raw_user_meta_data->>'display_name' AS admin_display_name
     FROM
         public.user_allocations AS ua
     LEFT JOIN

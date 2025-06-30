@@ -24,6 +24,8 @@ import {
 type Allocation = Tables<"user_allocations"> & {
   user_email: string;
   admin_email: string;
+  user_display_name: string | null;
+  admin_display_name: string | null;
 };
 
 export default function AllocationListPage() {
@@ -96,10 +98,10 @@ export default function AllocationListPage() {
               <div className="flex justify-between items-start mb-2">
                 <div className="flex-1">
                   <span className="font-medium text-sm">
-                    To: {alloc.user_email || "N/A"}
+                    To: {alloc.user_display_name || alloc.user_email || "N/A"}
                   </span>
                   <div className="text-xs text-muted-foreground mt-0.5">
-                    By: {alloc.admin_email || "N/A"}
+                    By: {alloc.admin_display_name || alloc.admin_email || "N/A"}
                   </div>
                 </div>
                 <span className="text-primary font-semibold text-base">

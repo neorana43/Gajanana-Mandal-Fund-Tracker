@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -9,29 +10,29 @@ import { toast } from "sonner";
 
 type User = {
   id: string;
-  email: string | undefined;
-  user_metadata: {
-    [key: string]: unknown;
-    display_name?: string;
-  };
+  displayName: string;
 };
 
 export default function AllocatePage() {
+  const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>("");
   const [amount, setAmount] = useState("");
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const supabase = createClient();
-      const {
-        data: { users },
-        error,
-      } = await supabase.auth.admin.listUsers();
-      if (error) {
-        console.error("Error fetching users:", error);
-      } else {
-        setUsers(users as User[]);
+      try {
+        const response = await fetch("/api/users/list");
+        const data = await response.json();
+
+        if (response.ok && data.users) {
+          setUsers(data.users);
+        } else {
+          toast.error("Failed to fetch users.");
+        }
+      } catch (error) {
+        toast.error("An error occurred while fetching users.");
+        console.error("Fetch Users Error:", error);
       }
     };
 
@@ -63,8 +64,7 @@ export default function AllocatePage() {
       console.error("Error allocating funds:", error);
     } else {
       toast.success("Funds allocated successfully!");
-      setSelectedUser("");
-      setAmount("");
+      router.push("/funds/list");
     }
   };
 
@@ -74,7 +74,7 @@ export default function AllocatePage() {
       <div className="space-y-4">
         <div>
           <Label htmlFor="user" className="mb-1.5 block">
-            Select Volunteer
+            Select User
           </Label>
           <select
             id="user"
@@ -87,7 +87,7 @@ export default function AllocatePage() {
             </option>
             {users.map((user) => (
               <option key={user.id} value={user.id}>
-                {user.user_metadata?.display_name || user.email}
+                {user.displayName}
               </option>
             ))}
           </select>

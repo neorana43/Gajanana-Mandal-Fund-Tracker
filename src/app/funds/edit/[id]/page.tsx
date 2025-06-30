@@ -10,11 +10,7 @@ import { Label } from "@/components/ui/label";
 
 type User = {
   id: string;
-  email: string | undefined;
-  user_metadata: {
-    [key: string]: unknown;
-    display_name?: string;
-  };
+  displayName: string;
 };
 
 export default function EditAllocationPage() {
@@ -28,39 +24,44 @@ export default function EditAllocationPage() {
   const [amount, setAmount] = useState("");
 
   useEffect(() => {
-    const fetchUsersAndAllocation = async () => {
-      // Fetch all users for the dropdown
-      const { data: usersData, error: usersError } =
-        await supabase.auth.admin.listUsers();
-      if (usersError) {
-        toast.error("Failed to fetch users.");
-        console.error(usersError);
-      } else {
-        setUsers(usersData.users as User[]);
-      }
+    const fetchInitialData = async () => {
+      setLoading(true);
+      try {
+        // Fetch all users for the dropdown
+        const usersResponse = await fetch("/api/users/list");
+        const usersData = await usersResponse.json();
+        if (usersResponse.ok && usersData.users) {
+          setUsers(usersData.users);
+        } else {
+          toast.error("Failed to fetch users.");
+        }
 
-      // Fetch the specific allocation to edit
-      const { data: allocationData, error: allocationError } = await supabase
-        .from("user_allocations")
-        .select("*")
-        .eq("id", id)
-        .single();
+        // Fetch the specific allocation to edit
+        const { data: allocationData, error: allocationError } = await supabase
+          .from("user_allocations")
+          .select("*")
+          .eq("id", id)
+          .single();
 
-      if (allocationError) {
-        toast.error("Failed to fetch allocation data.");
-        console.error(allocationError);
-        router.push("/funds/list"); // Redirect if allocation not found
-      } else if (allocationData) {
-        setSelectedUser(allocationData.user_id || "");
-        setAmount(String(allocationData.amount));
+        if (allocationError) {
+          toast.error("Failed to fetch allocation data.");
+          router.push("/funds/list");
+        } else if (allocationData) {
+          setSelectedUser(allocationData.user_id || "");
+          setAmount(String(allocationData.amount));
+        }
+      } catch (error) {
+        toast.error("An error occurred while loading data.");
+        console.error("Fetch Initial Data Error:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     if (id) {
-      fetchUsersAndAllocation();
+      fetchInitialData();
     }
-  }, [id, router, supabase.auth.admin]);
+  }, [id, router, supabase]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,7 +105,7 @@ export default function EditAllocationPage() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <Label htmlFor="user" className="mb-1.5 block">
-            Select Volunteer
+            Select User
           </Label>
           <select
             id="user"
@@ -117,7 +118,7 @@ export default function EditAllocationPage() {
             </option>
             {users.map((user) => (
               <option key={user.id} value={user.id}>
-                {user.user_metadata?.display_name || user.email}
+                {user.displayName}
               </option>
             ))}
           </select>
