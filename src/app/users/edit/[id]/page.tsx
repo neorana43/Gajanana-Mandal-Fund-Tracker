@@ -1,0 +1,178 @@
+"use client";
+
+import { useEffect, useState, useTransition } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useRouter, useParams } from "next/navigation";
+
+type UserType = "admin" | "volunteer";
+
+type EditUserFormData = {
+  id: string;
+  email: string;
+  displayName: string;
+  phone: string;
+  userType: UserType;
+};
+
+export default function EditUserPage() {
+  const router = useRouter();
+  const params = useParams();
+  const userId = params.id as string;
+
+  const [isPending, startTransition] = useTransition();
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<EditUserFormData | null>(null);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchUserData = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`/api/users/list?id=${userId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data.");
+        }
+        const data = await response.json();
+        const currentUser = data.users?.[0];
+
+        if (currentUser) {
+          setUser(currentUser);
+        } else {
+          toast.error("User not found.");
+          router.push("/users/list");
+        }
+      } catch {
+        toast.error("Could not load user data.");
+        router.push("/users/list");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [userId, router]);
+
+  const handleEdit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!user) return;
+
+    startTransition(async () => {
+      const response = await fetch("/api/users/update", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(user),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result.error || "Failed to update user.");
+      } else {
+        toast.success("User updated successfully!");
+        router.push("/users/list");
+      }
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="p-4 max-w-xl mx-auto">
+        <p>Loading user data...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  return (
+    <div className="p-4 pb-24 max-w-xl mx-auto">
+      <h1 className="text-xl font-bold mb-4">Edit User</h1>
+      <form onSubmit={handleEdit} className="space-y-4">
+        <div>
+          <Label htmlFor="displayName" className="mb-1.5 block">
+            Display Name
+          </Label>
+          <Input
+            id="displayName"
+            value={user.displayName || ""}
+            onChange={(e) =>
+              setUser(
+                (prev) => prev && { ...prev, displayName: e.target.value },
+              )
+            }
+            placeholder="John Doe"
+            required
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="email" className="mb-1.5 block">
+            Email
+          </Label>
+          <Input
+            id="email"
+            type="email"
+            value={user.email || ""}
+            onChange={(e) =>
+              setUser((prev) => prev && { ...prev, email: e.target.value })
+            }
+            placeholder="user@example.com"
+            required
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="phone" className="mb-1.5 block">
+            Phone Number (Optional)
+          </Label>
+          <Input
+            id="phone"
+            type="tel"
+            value={user.phone || ""}
+            onChange={(e) =>
+              setUser((prev) => prev && { ...prev, phone: e.target.value })
+            }
+            placeholder="+91 98765 43210"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="userType" className="mb-1.5 block">
+            User Type
+          </Label>
+          <Select
+            value={user.userType}
+            onValueChange={(value: UserType) =>
+              setUser((prev) => prev && { ...prev, userType: value })
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select user type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="volunteer">Volunteer</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Button type="submit" disabled={isPending} className="w-full">
+          {isPending ? "Saving..." : "Save Changes"}
+        </Button>
+      </form>
+    </div>
+  );
+}

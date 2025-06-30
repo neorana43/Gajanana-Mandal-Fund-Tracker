@@ -183,15 +183,17 @@ export default function MainNav() {
                 </Link>
               </li>
               {role === "admin" && (
-                <li>
-                  <Link
-                    href="/users/manage"
-                    onClick={() => setShowMenu(false)}
-                    className="block p-2 rounded hover:bg-muted"
-                  >
-                    Manage Users
-                  </Link>
-                </li>
+                <>
+                  <li>
+                    <Link
+                      href="/users/list"
+                      onClick={() => setShowMenu(false)}
+                      className="block p-2 rounded hover:bg-muted"
+                    >
+                      User List
+                    </Link>
+                  </li>
+                </>
               )}
             </ul>
             <Button
