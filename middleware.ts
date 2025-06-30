@@ -1,31 +1,47 @@
-import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
+import type { Database } from "@/types/supabase";
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
 
-  const supabase = createMiddlewareClient({ req, res });
+  const supabase = createMiddlewareClient<Database>({ req, res });
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  // Define routes that require authentication
-  const protectedRoutes = [
-    "/donate",
-    "/expense",
-    "/secret",
-    "/funds",
+  // 🔐 Redirect to /login if not authenticated
+  if (!user) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+
+  // 👤 Get role from user_roles table
+  const { data: roleData } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  const userRole = roleData?.role;
+
+  // 🔒 Define admin-only routes
+  const adminOnlyPaths = [
     "/dashboard/internal",
+    "/funds",
+    "/audit/allocations",
+    "/users/manage",
+    "/secret",
   ];
 
-  const isProtected = protectedRoutes.some((path) =>
+  const isAdminOnly = adminOnlyPaths.some((path) =>
     req.nextUrl.pathname.startsWith(path),
   );
 
-  if (isProtected && !session) {
-    return NextResponse.redirect(new URL("/login", req.url));
+  // ❌ Redirect volunteers away from admin routes
+  if (isAdminOnly && userRole !== "admin") {
+    return NextResponse.redirect(new URL("/denied", req.url));
   }
 
   return res;
@@ -33,11 +49,13 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/donate/:path*",
-    "/expense/:path*",
-    "/secret/:path*",
-    "/funds/:path*",
     "/dashboard/internal/:path*",
     "/dashboard/user/:path*",
+    "/funds/:path*",
+    "/audit/allocations",
+    "/users/manage",
+    "/secret/:path*",
+    "/donate/:path*",
+    "/expense/:path*",
   ],
 };
