@@ -52,7 +52,9 @@ export default function AddSecretSponsorPage() {
 
       <div className="space-y-4">
         <div>
-          <Label htmlFor="name">Name (optional)</Label>
+          <Label htmlFor="name" className="mb-1.5 block">
+            Name (optional)
+          </Label>
           <Input
             id="name"
             placeholder="e.g. Sponsor A"
@@ -62,7 +64,9 @@ export default function AddSecretSponsorPage() {
         </div>
 
         <div>
-          <Label htmlFor="amount">Amount (₹)</Label>
+          <Label htmlFor="amount" className="mb-1.5 block">
+            Amount (₹)
+          </Label>
           <Input
             id="amount"
             type="number"
@@ -73,7 +77,9 @@ export default function AddSecretSponsorPage() {
         </div>
 
         <div>
-          <Label htmlFor="notes">Notes (optional)</Label>
+          <Label htmlFor="notes" className="mb-1.5 block">
+            Notes (optional)
+          </Label>
           <Input
             id="notes"
             placeholder="Sponsor details, category, etc."

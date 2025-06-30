@@ -159,7 +159,9 @@ export default function ManageUsersPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4 mb-8">
         <div>
-          <Label htmlFor="displayName">Display Name</Label>
+          <Label htmlFor="displayName" className="mb-1.5 block">
+            Display Name
+          </Label>
           <Input
             id="displayName"
             name="displayName"
@@ -169,7 +171,9 @@ export default function ManageUsersPage() {
         </div>
 
         <div>
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email" className="mb-1.5 block">
+            Email
+          </Label>
           <Input
             id="email"
             name="email"
@@ -180,7 +184,9 @@ export default function ManageUsersPage() {
         </div>
 
         <div>
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password" className="mb-1.5 block">
+            Password
+          </Label>
           <Input
             id="password"
             name="password"
@@ -191,7 +197,9 @@ export default function ManageUsersPage() {
         </div>
 
         <div>
-          <Label htmlFor="phone">Phone Number (Optional)</Label>
+          <Label htmlFor="phone" className="mb-1.5 block">
+            Phone Number (Optional)
+          </Label>
           <Input
             id="phone"
             name="phone"
@@ -201,7 +209,9 @@ export default function ManageUsersPage() {
         </div>
 
         <div>
-          <Label htmlFor="userType">User Type</Label>
+          <Label htmlFor="userType" className="mb-1.5 block">
+            User Type
+          </Label>
           <Select name="userType" required>
             <SelectTrigger>
               <SelectValue placeholder="Select user type" />
@@ -225,7 +235,9 @@ export default function ManageUsersPage() {
           </DialogHeader>
           <form onSubmit={handleEdit} className="space-y-4 mt-4">
             <div>
-              <Label htmlFor="edit-displayName">Display Name</Label>
+              <Label htmlFor="edit-displayName" className="mb-1.5 block">
+                Display Name
+              </Label>
               <Input
                 id="edit-displayName"
                 value={editingUser?.displayName || ""}
@@ -240,7 +252,9 @@ export default function ManageUsersPage() {
             </div>
 
             <div>
-              <Label htmlFor="edit-email">Email</Label>
+              <Label htmlFor="edit-email" className="mb-1.5 block">
+                Email
+              </Label>
               <Input
                 id="edit-email"
                 type="email"
@@ -256,7 +270,9 @@ export default function ManageUsersPage() {
             </div>
 
             <div>
-              <Label htmlFor="edit-phone">Phone Number (Optional)</Label>
+              <Label htmlFor="edit-phone" className="mb-1.5 block">
+                Phone Number (Optional)
+              </Label>
               <Input
                 id="edit-phone"
                 type="tel"
@@ -271,7 +287,9 @@ export default function ManageUsersPage() {
             </div>
 
             <div>
-              <Label htmlFor="edit-userType">User Type</Label>
+              <Label htmlFor="edit-userType" className="mb-1.5 block">
+                User Type
+              </Label>
               <Select
                 value={editingUser?.userType}
                 onValueChange={(value: UserType) =>

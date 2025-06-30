@@ -24,7 +24,8 @@ export default function ExpenseForm() {
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
   const [note, setNote] = useState("");
-  const [users, setUsers] = useState<{ id: string; full_name: string }[]>([]);
+  const [billFile, setBillFile] = useState<File | null>(null);
+  const [users, setUsers] = useState<{ id: string; displayName: string }[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -46,12 +47,24 @@ export default function ExpenseForm() {
 
       if (roleData?.role === "admin") {
         setIsAdmin(true);
-        const { data: allUsers } = await supabase
-          .from("users")
-          .select("id, full_name")
-          .order("full_name");
+        // Fetch users from our reliable API endpoint
+        const response = await fetch("/api/users/list");
+        const data = await response.json();
 
-        if (allUsers) setUsers(allUsers);
+        if (response.ok && data.users) {
+          // The current user should be in the list from the API
+          setUsers(data.users);
+          // Set the default selection to the current user
+          setUserId(currentUser.id);
+        } else {
+          // Fallback in case the API fails
+          const adminUser = {
+            id: currentUser.id,
+            displayName: currentUser.user_metadata.display_name || "Admin",
+          };
+          setUsers([adminUser]);
+          setUserId(adminUser.id);
+        }
       }
     };
 
@@ -66,12 +79,36 @@ export default function ExpenseForm() {
     }
 
     setLoading(true);
+
+    let bill_url: string | null = null;
+
+    if (billFile) {
+      const filePath = `${userId}/${Date.now()}-${billFile.name}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("receipts")
+        .upload(filePath, billFile);
+
+      if (uploadError) {
+        toast.error("Failed to upload bill.");
+        console.error("Upload Error: ", uploadError);
+        setLoading(false);
+        return;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("receipts")
+        .getPublicUrl(uploadData.path);
+
+      bill_url = urlData.publicUrl;
+    }
+
     const { error } = await supabase.from("expenses").insert({
       user_id: userId,
       amount: Number(amount),
       category,
       note,
       date: new Date().toISOString(),
+      bill_url,
     });
 
     setLoading(false);
@@ -81,6 +118,15 @@ export default function ExpenseForm() {
       toast.error("Failed to save expense.");
     } else {
       toast.success("Expense saved!");
+      // Clear the form fields
+      setAmount("");
+      setCategory("");
+      setNote("");
+      setBillFile(null);
+      // Optionally, reset the user if it's an admin making entries for others
+      // For now, we'll keep the user selected.
+
+      // Redirect to the list page
       router.push("/expense/list");
     }
   };
@@ -92,18 +138,17 @@ export default function ExpenseForm() {
       <form onSubmit={handleSubmit} className="space-y-4">
         {isAdmin && (
           <div>
-            <Label>User</Label>
-            <Select
-              onValueChange={(value) => setUserId(value)}
-              defaultValue={userId}
-            >
+            <Label htmlFor="user" className="mb-1.5 block">
+              User
+            </Label>
+            <Select onValueChange={(value) => setUserId(value)} value={userId}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select user" />
               </SelectTrigger>
               <SelectContent>
                 {users.map((u) => (
                   <SelectItem key={u.id} value={u.id}>
-                    {u.full_name}
+                    {u.displayName}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -112,8 +157,11 @@ export default function ExpenseForm() {
         )}
 
         <div>
-          <Label>Amount</Label>
+          <Label htmlFor="amount" className="mb-1.5 block">
+            Amount
+          </Label>
           <Input
+            id="amount"
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
@@ -122,19 +170,38 @@ export default function ExpenseForm() {
         </div>
 
         <div>
-          <Label>Category</Label>
+          <Label htmlFor="category" className="mb-1.5 block">
+            Category
+          </Label>
           <Input
+            id="category"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
           />
         </div>
 
         <div>
-          <Label>Note</Label>
+          <Label htmlFor="note" className="mb-1.5 block">
+            Note
+          </Label>
           <Textarea
+            id="note"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Optional description or bill info"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="bill" className="mb-1.5 block">
+            Bill (Image or PDF)
+          </Label>
+          <Input
+            id="bill"
+            type="file"
+            onChange={(e) => setBillFile(e.target.files?.[0] || null)}
+            accept="image/*,application/pdf"
+            className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-foreground file:text-primary hover:file:bg-primary-foreground/90"
           />
         </div>
 

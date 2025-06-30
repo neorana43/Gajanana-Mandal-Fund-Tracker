@@ -17,13 +17,19 @@ export async function GET() {
     // Create a map of user IDs to roles
     const roleMap = new Map(roleData?.map((r) => [r.id, r.role]) || []);
 
-    const simplifiedUsers = data.users.map((u) => ({
-      id: u.id,
-      email: u.email || "(no email)",
-      displayName: u.user_metadata?.display_name || "N/A",
-      phone: u.user_metadata?.phone || "N/A",
-      userType: roleMap.get(u.id) || u.user_metadata?.user_type || "volunteer",
-    }));
+    const simplifiedUsers = data.users.map((u) => {
+      // Log the metadata to the server console for debugging
+      console.log(`User ${u.id} metadata:`, u.user_metadata);
+
+      return {
+        id: u.id,
+        email: u.email || "(no email)",
+        displayName: u.user_metadata?.display_name || u.email || "N/A",
+        phone: u.user_metadata?.phone || "N/A",
+        userType:
+          roleMap.get(u.id) || u.user_metadata?.user_type || "volunteer",
+      };
+    });
 
     return NextResponse.json({ users: simplifiedUsers }, { status: 200 });
   } catch {

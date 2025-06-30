@@ -50,24 +50,30 @@ export default function LoginPage() {
 
         <div className="space-y-4">
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label className="text-md mb-1.5 block" htmlFor="email">
+              Email
+            </Label>
             <Input
               id="email"
               type="email"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="rounded-md px-4 py-2 bg-inherit border mb-6"
             />
           </div>
 
           <div>
-            <Label htmlFor="password">Password</Label>
+            <Label className="text-md mb-1.5 block" htmlFor="password">
+              Password
+            </Label>
             <Input
               id="password"
               type="password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="rounded-md px-4 py-2 bg-inherit border mb-6"
             />
           </div>
 

@@ -8,19 +8,17 @@ import { format } from "date-fns";
 
 type LogEntry = {
   id: string;
-  action: "insert" | "update" | "delete";
-  user_id: string;
-  admin_id: string;
-  previous_amount: number | null;
-  new_amount: number | null;
-  timestamp: string;
-  user_email?: string;
+  created_at: string;
+  amount: number;
+  note?: string;
+  from_user_id: string;
+  to_user_id: string;
+  from_user_email?: string;
+  to_user_email?: string;
   admin_email?: string;
 };
 
 export default function AllocationAuditPage() {
-  const supabase = createClient();
-
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [filters, setFilters] = useState({
     adminEmail: "",
@@ -31,53 +29,56 @@ export default function AllocationAuditPage() {
 
   useEffect(() => {
     const fetchLogs = async () => {
-      const [{ data: allUsersData }, { data: logData }] = await Promise.all([
-        supabase.auth.admin.listUsers(),
-        supabase
-          .from("allocation_logs")
-          .select("*")
-          .order("timestamp", { ascending: false }),
-      ]);
+      const supabase = createClient();
+      let query = supabase.rpc("get_allocation_logs");
 
-      const emailMap = new Map<string, string>();
-      allUsersData?.users?.forEach((u) => {
-        if (u.id && u.email) emailMap.set(u.id, u.email);
-      });
+      if (filters.adminEmail) {
+        query = query.ilike("admin_email", `%${filters.adminEmail}%`);
+      }
+      if (filters.userEmail) {
+        query = query.or(
+          `from_user_email.ilike.%${filters.userEmail}%,to_user_email.ilike.%${filters.userEmail}%`,
+        );
+      }
+      if (filters.startDate) {
+        query = query.gte("created_at", filters.startDate);
+      }
+      if (filters.endDate) {
+        query = query.lte("created_at", filters.endDate);
+      }
 
-      const mappedLogs = (logData || []).map((log: any) => ({
-        ...log,
-        user_email: emailMap.get(log.user_id) || log.user_id,
-        admin_email: emailMap.get(log.admin_id) || log.admin_id,
-      }));
+      const { data, error } = await query;
 
-      setLogs(mappedLogs);
+      if (error) {
+        console.error("Error fetching allocation logs:", error);
+      } else {
+        setLogs(data as LogEntry[]);
+      }
     };
 
     fetchLogs();
-  }, []);
+  }, [filters]);
 
   const filteredLogs = logs.filter((log) => {
-    const { adminEmail, userEmail, startDate, endDate } = filters;
-    const logDate = new Date(log.timestamp);
-    const start = startDate ? new Date(startDate) : null;
-    const end = endDate ? new Date(endDate) : null;
-
+    // This client-side filtering might be redundant if the API does it all,
+    // but can be useful for instant feedback or if API filtering is limited.
     return (
-      (!adminEmail || log.admin_email?.includes(adminEmail)) &&
-      (!userEmail || log.user_email?.includes(userEmail)) &&
-      (!start || logDate >= start) &&
-      (!end || logDate <= end)
+      log.admin_email?.includes(filters.adminEmail) &&
+      (log.from_user_email?.includes(filters.userEmail) ||
+        log.to_user_email?.includes(filters.userEmail))
     );
   });
 
   return (
-    <div className="p-4 pb-24 max-w-xl mx-auto">
+    <div className="p-4">
       <h1 className="text-xl font-bold mb-4">Fund Allocation Audit</h1>
 
       {/* Filters */}
       <div className="grid grid-cols-1 gap-4 mb-6">
         <div>
-          <Label htmlFor="adminEmail">Admin Email</Label>
+          <Label htmlFor="adminEmail" className="mb-1.5 block">
+            Admin Email
+          </Label>
           <Input
             id="adminEmail"
             placeholder="Search by admin"
@@ -88,7 +89,9 @@ export default function AllocationAuditPage() {
           />
         </div>
         <div>
-          <Label htmlFor="userEmail">User Email</Label>
+          <Label htmlFor="userEmail" className="mb-1.5 block">
+            User Email
+          </Label>
           <Input
             id="userEmail"
             placeholder="Search by user"
@@ -100,7 +103,9 @@ export default function AllocationAuditPage() {
         </div>
         <div className="flex gap-2">
           <div className="flex-1">
-            <Label htmlFor="startDate">Start Date</Label>
+            <Label htmlFor="startDate" className="mb-1.5 block">
+              Start Date
+            </Label>
             <Input
               id="startDate"
               type="date"
@@ -111,7 +116,9 @@ export default function AllocationAuditPage() {
             />
           </div>
           <div className="flex-1">
-            <Label htmlFor="endDate">End Date</Label>
+            <Label htmlFor="endDate" className="mb-1.5 block">
+              End Date
+            </Label>
             <Input
               id="endDate"
               type="date"
@@ -125,28 +132,32 @@ export default function AllocationAuditPage() {
       </div>
 
       {/* Log List */}
-      <ul className="space-y-3">
+      <div className="space-y-4">
         {filteredLogs.map((log) => (
-          <li key={log.id} className="bg-white rounded-xl shadow border p-3">
-            <div className="flex justify-between text-sm mb-1">
-              <span className="font-semibold">{log.action.toUpperCase()}</span>
-              <span className="text-muted-foreground">
-                {format(new Date(log.timestamp), "dd MMM yyyy")}
-              </span>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              <span className="font-medium">{log.admin_email}</span> changed
-              allocation for{" "}
-              <span className="font-medium">{log.user_email}</span>
-              <br />
-              {log.previous_amount ?? 0} →{" "}
-              <span className="text-primary font-semibold">
-                {log.new_amount}
-              </span>
-            </div>
-          </li>
+          <div key={log.id} className="p-4 border rounded-lg">
+            <p>
+              <strong>Amount:</strong> {log.amount}
+            </p>
+            <p>
+              <strong>From:</strong> {log.from_user_email}
+            </p>
+            <p>
+              <strong>To:</strong> {log.to_user_email}
+            </p>
+            <p>
+              <strong>By:</strong> {log.admin_email}
+            </p>
+            <p>
+              <strong>Date:</strong> {format(new Date(log.created_at), "PPP p")}
+            </p>
+            {log.note && (
+              <p>
+                <strong>Note:</strong> {log.note}
+              </p>
+            )}
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }

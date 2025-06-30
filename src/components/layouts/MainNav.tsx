@@ -42,8 +42,8 @@ const navItems = (role: string | null, isLoggedIn: boolean): NavItem[] => {
 
   const baseItems: NavItem[] = [
     { href: "/dashboard", icon: Home, label: "Home" },
-    { href: "/donate", icon: PlusCircle, label: "Donate" },
-    { href: "/expense", icon: FileText, label: "Expenses" },
+    { href: "/donate/list", icon: PlusCircle, label: "Donate" },
+    { href: "/expense/list", icon: FileText, label: "Expenses" },
   ];
 
   if (role === "admin") {
@@ -136,7 +136,7 @@ export default function MainNav() {
                   {isActive && (
                     <motion.div
                       layoutId="nav-underline"
-                      className="absolute -bottom-1 left-1/2 w-4 h-1 bg-primary rounded-full"
+                      className="absolute -bottom-1 left-1/2 w-4 h-1 bg-primary rounded-full -translate-x-2/4"
                       style={{ transform: "translateX(-50%)" }}
                       transition={{
                         type: "spring",
