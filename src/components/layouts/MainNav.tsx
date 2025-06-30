@@ -13,6 +13,7 @@ import {
   LogIn,
   LogOut,
   LucideProps,
+  Landmark,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -47,6 +48,7 @@ const navItems = (role: string | null, isLoggedIn: boolean): NavItem[] => {
   ];
 
   if (role === "admin") {
+    baseItems.push({ href: "/funds/list", icon: Landmark, label: "Funds" });
     baseItems.push({ href: "/secret/list", icon: Lock, label: "Secret" });
   }
 

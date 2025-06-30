@@ -158,20 +158,38 @@ export type Database = {
           created_at: string | null;
           id: string;
           user_id: string | null;
+          admin_id: string | null;
         };
         Insert: {
           amount: number;
           created_at?: string | null;
           id?: string;
           user_id?: string | null;
+          admin_id?: string | null;
         };
         Update: {
           amount?: number;
           created_at?: string | null;
           id?: string;
           user_id?: string | null;
+          admin_id?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "user_allocations_admin_id_fkey";
+            columns: ["admin_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_allocations_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       user_roles: {
         Row: {

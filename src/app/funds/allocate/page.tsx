@@ -11,7 +11,8 @@ type User = {
   id: string;
   email: string | undefined;
   user_metadata: {
-    display_name: string;
+    [key: string]: unknown;
+    display_name?: string;
   };
 };
 
@@ -49,7 +50,7 @@ export default function AllocatePage() {
       return;
     }
 
-    const { error } = await supabase.from("allocations").insert([
+    const { error } = await supabase.from("user_allocations").insert([
       {
         user_id: selectedUser,
         amount: parseFloat(amount),
@@ -86,7 +87,7 @@ export default function AllocatePage() {
             </option>
             {users.map((user) => (
               <option key={user.id} value={user.id}>
-                {user.user_metadata.display_name} ({user.email})
+                {user.user_metadata?.display_name || user.email}
               </option>
             ))}
           </select>
