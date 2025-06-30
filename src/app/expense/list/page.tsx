@@ -2,88 +2,81 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
-import { Button } from "@/components/ui/button";
-import { exportToCSV, exportToPDF } from "@/lib/export";
+import { format } from "date-fns";
+import Image from "next/image";
 
-export default function ExpenseList() {
+export default function ExpenseListPage() {
   const supabase = createClient();
   const [expenses, setExpenses] = useState<any[]>([]);
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchExpenses = async () => {
       const { data } = await supabase
         .from("expenses")
         .select("*")
         .order("date", { ascending: false });
+
       setExpenses(data || []);
     };
-    fetch();
+
+    fetchExpenses();
   }, []);
 
-  const filtered = expenses.filter((e) =>
-    e.category.toLowerCase().includes(filter.toLowerCase()),
+  const filteredExpenses = expenses.filter((e) =>
+    e.category?.toLowerCase().includes(filter.toLowerCase()),
   );
 
   return (
-    <div className="max-w-5xl mx-auto py-10 space-y-4">
-      <h1 className="text-xl font-bold">Expense Records</h1>
+    <div className="p-4 pb-24 max-w-xl mx-auto">
+      <h1 className="text-xl font-bold mb-4">Expense List</h1>
 
-      <div className="flex gap-2">
-        <input
-          placeholder="Filter by category"
-          className="border p-2 rounded w-full"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        />
-        <Button onClick={() => exportToCSV(filtered, "expenses")}>
-          Export CSV
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => exportToPDF("expense-table", "expenses")}
-        >
-          Export PDF
-        </Button>
-      </div>
+      {/* Filter Input */}
+      <input
+        type="text"
+        placeholder="Filter by category..."
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+        className="w-full border p-2 rounded-md text-sm mb-4"
+      />
 
-      <div id="expense-table" className="overflow-x-auto mt-4">
-        <table className="w-full border">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="p-2 border">Category</th>
-              <th className="p-2 border">Description</th>
-              <th className="p-2 border">Amount</th>
-              <th className="p-2 border">Date</th>
-              <th className="p-2 border">Receipt</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((e) => (
-              <tr key={e.id}>
-                <td className="border p-2">{e.category}</td>
-                <td className="border p-2">{e.description}</td>
-                <td className="border p-2">₹{e.amount}</td>
-                <td className="border p-2">{e.date}</td>
-                <td className="border p-2">
-                  {e.receipt_url ? (
-                    <a
-                      href={e.receipt_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 underline"
-                    >
-                      View
-                    </a>
-                  ) : (
-                    "-"
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* List */}
+      {filteredExpenses.length === 0 ? (
+        <p className="text-muted-foreground text-sm">No expenses found.</p>
+      ) : (
+        <ul className="space-y-4">
+          {filteredExpenses.map((expense) => (
+            <li
+              key={expense.id}
+              className="bg-white rounded-xl shadow border p-4"
+            >
+              <div className="flex justify-between items-center mb-1">
+                <span className="font-medium text-sm capitalize">
+                  {expense.category}
+                </span>
+                <span className="text-destructive font-semibold text-base">
+                  ₹{expense.amount}
+                </span>
+              </div>
+              <div className="text-xs text-muted-foreground mb-1">
+                {format(new Date(expense.date), "dd MMM yyyy")}
+              </div>
+              {expense.notes && (
+                <p className="text-xs mb-2 text-gray-800">{expense.notes}</p>
+              )}
+              {expense.receipt_url && (
+                <Image
+                  src={expense.receipt_url}
+                  alt="Receipt"
+                  width={100}
+                  height={100}
+                  className="rounded border object-cover"
+                />
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

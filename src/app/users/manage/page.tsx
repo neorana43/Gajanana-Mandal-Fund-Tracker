@@ -1,165 +1,362 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase";
+import { useEffect, useState, useTransition } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Pencil, Trash2 } from "lucide-react";
+
+type UserType = "admin" | "volunteer";
 
 type User = {
   id: string;
   email: string;
-  role?: string;
+  displayName: string;
+  phone: string;
+  userType: UserType;
+};
+
+type EditUserFormData = {
+  id: string;
+  email: string;
+  displayName: string;
+  phone: string;
+  userType: UserType;
 };
 
 export default function ManageUsersPage() {
-  const supabase = createClient();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("volunteer");
   const [users, setUsers] = useState<User[]>([]);
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [isPending, startTransition] = useTransition();
+  const [editingUser, setEditingUser] = useState<EditUserFormData | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const fetchUsers = async () => {
-    const {
-      data: { users: allUsers },
-    } = await supabase.auth.admin.listUsers();
-    const { data: roles } = await supabase.from("user_roles").select("*");
-
-    const merged = (allUsers || []).map((u) => ({
-      id: u.id,
-      email: u.email || "",
-      role: roles?.find((r) => r.id === u.id)?.role || "",
-    }));
-    setUsers(merged);
+    setLoading(true);
+    try {
+      const response = await fetch("/api/users/list");
+      if (!response.ok) {
+        throw new Error("Failed to fetch users.");
+      }
+      const data = await response.json();
+      setUsers(data.users || []);
+    } catch {
+      toast.error("Could not load user list.");
+      setUsers([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  const handleCreateUser = async () => {
-    setMessage("");
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const displayName = formData.get("displayName") as string;
+    const phone = formData.get("phone") as string;
+    const userType = formData.get("userType") as UserType;
 
-    const { data, error } = await supabase.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-    });
-
-    if (error) {
-      setMessage("❌ " + error.message);
+    if (!userType) {
+      toast.error("Please select a user type.");
       return;
     }
 
-    const userId = data?.user?.id;
-    if (!userId) return;
+    startTransition(async () => {
+      const response = await fetch("/api/users/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, displayName, phone, userType }),
+      });
 
-    const { error: roleError } = await supabase
-      .from("user_roles")
-      .insert([{ id: userId, role }]);
+      const result = await response.json();
 
-    if (roleError) {
-      setMessage("⚠️ User created, but role not saved: " + roleError.message);
-    } else {
-      setMessage("✅ User created successfully");
-      setEmail("");
-      setPassword("");
-      fetchUsers();
-    }
-  };
-
-  const handleUpdateRole = async (userId: string, newRole: string) => {
-    const { error } = await supabase
-      .from("user_roles")
-      .upsert({ id: userId, role: newRole });
-
-    if (error) {
-      alert("❌ Failed to update role: " + error.message);
-    } else {
-      alert("✅ Role updated");
-      fetchUsers();
-    }
-  };
-
-  const handlePasswordReset = async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "/reset-password",
+      if (!response.ok) {
+        toast.error(result.error || "Failed to create user.");
+      } else {
+        toast.success("User created successfully!");
+        (event.target as HTMLFormElement).reset();
+        fetchUsers();
+      }
     });
+  };
 
-    if (error) {
-      alert("❌ " + error.message);
-    } else {
-      alert(`✅ Password reset email sent to ${email}`);
-    }
+  const handleEdit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!editingUser) return;
+
+    startTransition(async () => {
+      const response = await fetch("/api/users/update", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editingUser),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result.error || "Failed to update user.");
+      } else {
+        toast.success("User updated successfully!");
+        setIsEditDialogOpen(false);
+        setEditingUser(null);
+        fetchUsers();
+      }
+    });
+  };
+
+  const handleDelete = async (userId: string) => {
+    startTransition(async () => {
+      const response = await fetch("/api/users/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: userId }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result.error || "Failed to delete user.");
+      } else {
+        toast.success("User deleted successfully!");
+        fetchUsers();
+      }
+    });
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-10">
-      <h1 className="text-xl font-bold mb-6">👥 Manage Users</h1>
+    <div className="p-4 pb-24 max-w-xl mx-auto">
+      <h1 className="text-xl font-bold mb-4">Manage Users</h1>
 
-      <div className="space-y-3 mb-8 border p-4 rounded">
-        <Label>Email</Label>
-        <Input value={email} onChange={(e) => setEmail(e.target.value)} />
+      <form onSubmit={handleSubmit} className="space-y-4 mb-8">
+        <div>
+          <Label htmlFor="displayName">Display Name</Label>
+          <Input
+            id="displayName"
+            name="displayName"
+            placeholder="John Doe"
+            required
+          />
+        </div>
 
-        <Label>Password</Label>
-        <Input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div>
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="newuser@example.com"
+            required
+          />
+        </div>
 
-        <Label>Role</Label>
-        <select
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          className="w-full border px-3 py-2 rounded"
-        >
-          <option value="volunteer">Volunteer</option>
-          <option value="admin">Admin</option>
-        </select>
+        <div>
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="••••••••"
+            required
+          />
+        </div>
 
-        <Button onClick={handleCreateUser}>Create User</Button>
-        {message && <p className="text-sm mt-2 text-green-600">{message}</p>}
-      </div>
+        <div>
+          <Label htmlFor="phone">Phone Number (Optional)</Label>
+          <Input
+            id="phone"
+            name="phone"
+            type="tel"
+            placeholder="+91 98765 43210"
+          />
+        </div>
 
-      <h2 className="text-lg font-semibold mb-2">📋 Existing Users</h2>
-      <table className="w-full text-sm border">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border p-2">Email</th>
-            <th className="border p-2">Role</th>
-            <th className="border p-2">Update</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((u) => (
-            <tr key={u.id}>
-              <td className="border p-2">{u.email}</td>
-              <td className="border p-2">
-                <select
-                  value={u.role}
-                  onChange={(e) => handleUpdateRole(u.id, e.target.value)}
-                  className="border rounded px-2 py-1"
-                >
-                  <option value="volunteer">Volunteer</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </td>
-              <td className="border p-2 space-x-2 text-center">
-                ✅
-                <button
-                  onClick={() => handlePasswordReset(u.email)}
-                  className="text-blue-600 underline text-xs"
-                >
-                  Reset Password
-                </button>
-              </td>
-            </tr>
+        <div>
+          <Label htmlFor="userType">User Type</Label>
+          <Select name="userType" required>
+            <SelectTrigger>
+              <SelectValue placeholder="Select user type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="volunteer">Volunteer</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Button type="submit" disabled={isPending} className="w-full">
+          {isPending ? "Creating..." : "Create User"}
+        </Button>
+      </form>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit User</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleEdit} className="space-y-4 mt-4">
+            <div>
+              <Label htmlFor="edit-displayName">Display Name</Label>
+              <Input
+                id="edit-displayName"
+                value={editingUser?.displayName || ""}
+                onChange={(e) =>
+                  setEditingUser(
+                    (prev) => prev && { ...prev, displayName: e.target.value },
+                  )
+                }
+                placeholder="John Doe"
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="edit-email">Email</Label>
+              <Input
+                id="edit-email"
+                type="email"
+                value={editingUser?.email || ""}
+                onChange={(e) =>
+                  setEditingUser(
+                    (prev) => prev && { ...prev, email: e.target.value },
+                  )
+                }
+                placeholder="user@example.com"
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="edit-phone">Phone Number (Optional)</Label>
+              <Input
+                id="edit-phone"
+                type="tel"
+                value={editingUser?.phone || ""}
+                onChange={(e) =>
+                  setEditingUser(
+                    (prev) => prev && { ...prev, phone: e.target.value },
+                  )
+                }
+                placeholder="+91 98765 43210"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="edit-userType">User Type</Label>
+              <Select
+                value={editingUser?.userType}
+                onValueChange={(value: UserType) =>
+                  setEditingUser((prev) => prev && { ...prev, userType: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select user type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="volunteer">Volunteer</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button type="submit" disabled={isPending} className="w-full">
+              {isPending ? "Saving..." : "Save Changes"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <h2 className="text-lg font-semibold mb-2">Existing Users</h2>
+      {loading ? (
+        <p className="text-sm text-muted-foreground">Loading users...</p>
+      ) : users.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No users found.</p>
+      ) : (
+        <ul className="space-y-2 text-sm">
+          {users.map((user) => (
+            <li key={user.id} className="border rounded p-3 bg-white shadow-sm">
+              <div className="flex justify-between items-start">
+                <div className="space-y-1">
+                  <div className="font-medium">{user.displayName}</div>
+                  <div className="text-muted-foreground">{user.email}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {user.phone}
+                  </div>
+                  <div className="text-xs font-medium">
+                    Type: {user.userType}
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setEditingUser(user);
+                      setIsEditDialogOpen(true);
+                    }}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete User</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete {user.displayName}?
+                          This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDelete(user.id)}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </div>
+            </li>
           ))}
-        </tbody>
-      </table>
+        </ul>
+      )}
     </div>
   );
 }

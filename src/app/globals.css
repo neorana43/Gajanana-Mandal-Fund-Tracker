@@ -120,10 +120,34 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
+  html,
   body {
-    @apply bg-background text-foreground;
+    @apply min-h-screen bg-background text-foreground antialiased font-sans scroll-smooth;
+  }
+
+  a {
+    @apply text-primary hover:underline transition-colors duration-200;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary;
+  }
+
+  * {
+    @apply box-border;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground rounded;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
   }
 }

@@ -1,84 +1,142 @@
 import { cookies } from "next/headers";
 import { createServerClientWithCookies } from "@/lib/supabase";
+import DashboardTabs from "@/components/layouts/DashboardTabs";
 
 export default async function UserDashboard() {
   const cookieStore = await cookies();
   const supabase = createServerClientWithCookies(cookieStore);
 
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const userId = user?.id;
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  const [{ data: allocation }, { data: expenses }] = await Promise.all([
+  const user = session?.user;
+
+  if (!user) {
+    return (
+      <div className="p-6 text-center text-muted-foreground">
+        <p>You must be logged in to view your dashboard.</p>
+      </div>
+    );
+  }
+
+  const [allocRes, expensesRes, donationsRes] = await Promise.all([
     supabase
-      .from("user_allocations")
+      .from("fund_allocations")
       .select("amount")
-      .eq("user_id", userId)
+      .eq("user_id", user.id)
       .maybeSingle(),
-
     supabase
       .from("expenses")
-      .select("amount, category, description, date, receipt_url")
-      .eq("created_by", userId)
+      .select("amount, category, date")
+      .eq("user_id", user.id)
       .order("date", { ascending: false }),
+    supabase
+      .from("donations")
+      .select("amount, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false }),
   ]);
 
-  const allocated = Number(allocation?.amount || 0);
-  const totalSpent =
-    expenses?.reduce((sum, e) => sum + Number(e.amount), 0) || 0;
-  const remaining = allocated - totalSpent;
+  const allocated = allocRes?.data?.amount || 0;
+  const expenses = expensesRes?.data || [];
+  const donations = donationsRes?.data || [];
+
+  const spent = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const remaining = allocated - spent;
 
   return (
-    <div className="max-w-3xl mx-auto py-10 space-y-6">
-      <h1 className="text-2xl font-bold mb-4">Your Fund Dashboard</h1>
+    <div className="p-4 pb-24 max-w-xl mx-auto">
+      <h1 className="text-xl font-bold mb-4">Your Dashboard</h1>
 
-      <div className="grid grid-cols-3 gap-4 text-white text-center font-semibold">
-        <div className="bg-saffron p-4 rounded shadow">
-          💰 Allocated: ₹{allocated}
-        </div>
-        <div className="bg-red-600 p-4 rounded shadow">
-          💸 Spent: ₹{totalSpent}
-        </div>
-        <div className="bg-green-600 p-4 rounded shadow">
-          🏦 Remaining: ₹{remaining}
-        </div>
-      </div>
-
-      <h2 className="text-lg font-semibold mt-8">Your Expenses</h2>
-      <table className="w-full text-sm border">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border p-2">Category</th>
-            <th className="border p-2">Amount</th>
-            <th className="border p-2">Date</th>
-            <th className="border p-2">Receipt</th>
-          </tr>
-        </thead>
-        <tbody>
-          {expenses?.map((e, idx) => (
-            <tr key={idx}>
-              <td className="border p-2">{e.category}</td>
-              <td className="border p-2">₹{e.amount}</td>
-              <td className="border p-2">{e.date}</td>
-              <td className="border p-2">
-                {e.receipt_url ? (
-                  <a
-                    href={e.receipt_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 underline"
-                  >
-                    View
-                  </a>
+      <DashboardTabs
+        tabs={[
+          {
+            label: "Overview",
+            content: (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <div className="bg-white rounded-xl shadow p-4 text-center border">
+                  <p className="text-sm text-muted-foreground">Allocated</p>
+                  <p className="text-lg font-semibold text-primary">
+                    ₹{allocated}
+                  </p>
+                </div>
+                <div className="bg-white rounded-xl shadow p-4 text-center border">
+                  <p className="text-sm text-muted-foreground">Spent</p>
+                  <p className="text-lg font-semibold text-destructive">
+                    ₹{spent}
+                  </p>
+                </div>
+                <div className="bg-white rounded-xl shadow p-4 text-center border">
+                  <p className="text-sm text-muted-foreground">Remaining</p>
+                  <p className="text-lg font-semibold text-green-600">
+                    ₹{remaining}
+                  </p>
+                </div>
+              </div>
+            ),
+          },
+          {
+            label: "Your Donations",
+            content: (
+              <div className="space-y-2">
+                {donations.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    No donations found.
+                  </p>
                 ) : (
-                  "-"
+                  donations.map((d, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-white rounded-lg border shadow p-3 text-sm"
+                    >
+                      <div className="flex justify-between">
+                        <span className="font-medium text-primary">
+                          ₹{d.amount}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(d.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                  ))
                 )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </div>
+            ),
+          },
+          {
+            label: "Your Expenses",
+            content: (
+              <div className="space-y-2">
+                {expenses.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    No expenses recorded.
+                  </p>
+                ) : (
+                  expenses.map((e, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-white rounded-lg border shadow p-3 text-sm"
+                    >
+                      <div className="flex justify-between">
+                        <span className="font-medium text-destructive">
+                          ₹{e.amount}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(e.date).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {e.category}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

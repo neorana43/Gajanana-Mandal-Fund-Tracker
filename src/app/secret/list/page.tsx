@@ -2,89 +2,66 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
-import { exportToCSV, exportToPDF } from "@/lib/export";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 
-export default function SponsorListPage() {
+export default function SecretSponsorListPage() {
   const supabase = createClient();
-  const [sponsors, setSponsors] = useState<any[]>([]);
-  const [role, setRole] = useState<string | null>(null);
-  const router = useRouter();
+  const [secretDonations, setSecretDonations] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetch = async () => {
-      const user = await supabase.auth.getUser();
-      const { data: roleData } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("id", user.data.user?.id)
-        .single();
-
-      if (roleData?.role !== "admin") {
-        router.replace("/dashboard/internal");
-        return;
-      }
-
-      setRole("admin");
-
-      const { data } = await supabase
-        .from("sponsors")
+    const fetchSecret = async () => {
+      const { data, error } = await supabase
+        .from("donations")
         .select("*")
+        .eq("is_secret", true)
         .order("created_at", { ascending: false });
 
-      setSponsors(data || []);
+      if (!error && data) {
+        setSecretDonations(data);
+      }
+
+      setLoading(false);
     };
 
-    fetch();
-  }, [supabase, router]);
-
-  if (!role) return null;
+    fetchSecret();
+  }, []);
 
   return (
-    <div className="max-w-5xl mx-auto py-10 space-y-6">
-      <h1 className="text-xl font-bold">Secret Sponsor Records</h1>
+    <div className="p-4 pb-24 max-w-xl mx-auto">
+      <h1 className="text-xl font-bold mb-4">Secret Sponsors</h1>
 
-      <div className="flex gap-2">
-        <Button onClick={() => exportToCSV(sponsors, "sponsors")}>
-          Export CSV
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => exportToPDF("sponsor-table", "sponsors")}
-        >
-          Export PDF
-        </Button>
-      </div>
-
-      <div id="sponsor-table" className="overflow-x-auto mt-4">
-        <table className="w-full border text-sm">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="border p-2">Name</th>
-              <th className="border p-2">Category</th>
-              <th className="border p-2">Amount</th>
-              <th className="border p-2">Full?</th>
-              <th className="border p-2">Details</th>
-              <th className="border p-2">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sponsors.map((s) => (
-              <tr key={s.id}>
-                <td className="border p-2">{s.sponsor_name}</td>
-                <td className="border p-2">{s.category}</td>
-                <td className="border p-2">₹{s.amount}</td>
-                <td className="border p-2">{s.is_full ? "✅" : "❌"}</td>
-                <td className="border p-2">{s.description || "-"}</td>
-                <td className="border p-2">
-                  {new Date(s.created_at).toLocaleDateString()}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {loading ? (
+        <p className="text-sm text-muted-foreground">Loading...</p>
+      ) : secretDonations.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          No secret sponsors found.
+        </p>
+      ) : (
+        <ul className="space-y-4">
+          {secretDonations.map((donation) => (
+            <li
+              key={donation.id}
+              className="bg-white rounded-xl shadow border p-4"
+            >
+              <div className="flex justify-between items-center mb-1">
+                <span className="font-medium text-sm">
+                  {donation.name || "Anonymous"}
+                </span>
+                <span className="text-primary font-semibold text-base">
+                  ₹{donation.amount}
+                </span>
+              </div>
+              <div className="text-xs text-muted-foreground mb-1">
+                {format(new Date(donation.created_at), "dd MMM yyyy")}
+              </div>
+              {donation.notes && (
+                <div className="text-xs text-gray-700">{donation.notes}</div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

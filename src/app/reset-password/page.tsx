@@ -1,41 +1,64 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export default function ResetPasswordPage() {
   const supabase = createClient();
-  const router = useRouter();
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleReset = async () => {
-    const { error } = await supabase.auth.updateUser({ password });
+    if (!email) {
+      toast.error("Please enter your email.");
+      return;
+    }
+
+    setLoading(true);
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${location.origin}/update-password`,
+    });
+
+    setLoading(false);
 
     if (error) {
-      setMessage("❌ " + error.message);
+      toast.error("Failed to send reset email.");
     } else {
-      setMessage("✅ Password updated. You can now log in.");
-      setTimeout(() => router.push("/login"), 2000);
+      toast.success("Password reset email sent.");
     }
   };
 
   return (
-    <div className="max-w-md mx-auto py-20">
-      <h1 className="text-xl font-bold mb-6">🔒 Reset Your Password</h1>
-      <div className="space-y-4">
-        <Label>New Password</Label>
-        <Input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <Button onClick={handleReset}>Update Password</Button>
-        {message && <p className="mt-2 text-sm text-green-700">{message}</p>}
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="w-full max-w-sm space-y-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold">Reset Password</h1>
+          <p className="text-sm text-muted-foreground">
+            Enter your email to receive a reset link.
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <Button onClick={handleReset} disabled={loading} className="w-full">
+            {loading ? "Sending..." : "Send Reset Link"}
+          </Button>
+        </div>
       </div>
     </div>
   );

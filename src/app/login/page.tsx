@@ -1,51 +1,81 @@
 "use client";
 
 import { useState } from "react";
+import { createClient } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 export default function LoginPage() {
+  const router = useRouter();
   const supabase = createClient();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      toast.error("Please enter email and password.");
+      return;
+    }
+
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    if (error) {
-      setMessage("Error: " + error.message);
-    } else {
-      setMessage("Logged in!");
-      window.location.href = "/dashboard";
-    }
+
     setLoading(false);
+
+    if (error) {
+      toast.error("Login failed.");
+    } else {
+      toast.success("Login successful!");
+      router.push("/dashboard");
+    }
   };
 
   return (
-    <div className="max-w-sm mx-auto py-10">
-      <h1 className="text-xl font-semibold mb-4">Login</h1>
-      <Input
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <Input
-        placeholder="Password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="mt-2"
-      />
-      <Button className="mt-4 w-full" onClick={handleLogin} disabled={loading}>
-        {loading ? "Logging in..." : "Login"}
-      </Button>
-      <p className="text-red-500 mt-2">{message}</p>
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="w-full max-w-sm space-y-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold">Login</h1>
+          <p className="text-sm text-muted-foreground">
+            Admins and volunteers only
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <Button onClick={handleLogin} disabled={loading} className="w-full">
+            {loading ? "Logging in..." : "Login"}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

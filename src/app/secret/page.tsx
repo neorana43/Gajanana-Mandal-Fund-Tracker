@@ -1,121 +1,95 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { createClient } from "@/lib/supabase";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { createClient } from "@/lib/supabase";
-import { redirect } from "next/navigation";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-export default function SecretSponsorForm() {
+export default function AddSecretSponsorPage() {
   const supabase = createClient();
+  const router = useRouter();
 
-  const [sponsorName, setSponsorName] = useState("");
-  const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
+  const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
-  const [isFull, setIsFull] = useState(false);
-  const [role, setRole] = useState("");
+  const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState("");
-
-  useEffect(() => {
-    const fetchRole = async () => {
-      const user = await supabase.auth.getUser();
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("id", user.data.user?.id)
-        .single();
-
-      if (data?.role !== "admin") {
-        redirect("/dashboard");
-      } else {
-        setRole("admin");
-      }
-    };
-
-    fetchRole();
-  }, []);
 
   const handleSubmit = async () => {
-    setLoading(true);
+    if (!amount) {
+      toast.error("Amount is required.");
+      return;
+    }
 
-    const user = await supabase.auth.getUser();
-    const { error } = await supabase.from("sponsors").insert([
+    setLoading(true);
+    const { data: userData } = await supabase.auth.getUser();
+
+    const { error } = await supabase.from("donations").insert([
       {
-        sponsor_name: sponsorName,
-        category,
-        description,
+        name: name || "Anonymous",
         amount: parseFloat(amount),
-        is_full: isFull,
-        created_by: user.data.user?.id,
+        notes,
+        is_secret: true,
+        created_by: userData?.user?.id,
       },
     ]);
 
-    if (error) {
-      setMsg("Error: " + error.message);
-    } else {
-      setMsg("Sponsor saved successfully!");
-      setSponsorName("");
-      setCategory("");
-      setDescription("");
-      setAmount("");
-      setIsFull(false);
-    }
-
     setLoading(false);
+
+    if (!error) {
+      toast.success("Secret sponsor added.");
+      router.push("/secret/list");
+    } else {
+      toast.error("Failed to save sponsor.");
+    }
   };
 
   return (
-    <div className="max-w-md mx-auto py-10">
-      <h2 className="text-xl font-semibold mb-4">Secret Sponsorship Entry</h2>
+    <div className="p-4 pb-24 max-w-xl mx-auto">
+      <h1 className="text-xl font-bold mb-4">Add Secret Sponsor</h1>
 
-      <Label>Name</Label>
-      <Input
-        value={sponsorName}
-        onChange={(e) => setSponsorName(e.target.value)}
-        className="mb-3"
-      />
+      <div className="space-y-4">
+        <div>
+          <Label htmlFor="name">Name (optional)</Label>
+          <Input
+            id="name"
+            placeholder="e.g. Sponsor A"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
 
-      <Label>Category (e.g. Murti, Lights, Event)</Label>
-      <Input
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        className="mb-3"
-      />
+        <div>
+          <Label htmlFor="amount">Amount (₹)</Label>
+          <Input
+            id="amount"
+            type="number"
+            placeholder="Enter amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+        </div>
 
-      <Label>Description (optional)</Label>
-      <Textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        className="mb-3"
-      />
+        <div>
+          <Label htmlFor="notes">Notes (optional)</Label>
+          <Input
+            id="notes"
+            placeholder="Sponsor details, category, etc."
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+          />
+        </div>
 
-      <Label>Amount</Label>
-      <Input
-        type="number"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        className="mb-3"
-      />
-
-      <div className="flex items-center space-x-2 mb-3">
-        <Checkbox
-          id="isFull"
-          checked={isFull}
-          onCheckedChange={(val) => setIsFull(!!val)}
-        />
-        <Label htmlFor="isFull">Full Sponsorship?</Label>
+        <Button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="w-full mt-2"
+        >
+          {loading ? "Saving..." : "Submit"}
+        </Button>
       </div>
-
-      <Button onClick={handleSubmit} disabled={loading} className="w-full">
-        {loading ? "Submitting..." : "Submit Sponsorship"}
-      </Button>
-
-      {msg && <p className="text-green-600 mt-4">{msg}</p>}
     </div>
   );
 }

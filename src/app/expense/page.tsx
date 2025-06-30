@@ -1,130 +1,147 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
-import { useRouter } from "next/navigation";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-export default function AddExpensePage() {
+export default function ExpenseForm() {
   const supabase = createClient();
   const router = useRouter();
 
+  const [userId, setUserId] = useState<string>("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [remaining, setRemaining] = useState<number | null>(null);
-  const [error, setError] = useState("");
+  const [note, setNote] = useState("");
+  const [users, setUsers] = useState<{ id: string; full_name: string }[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchRemaining = async () => {
+    const init = async () => {
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      const userId = user?.id;
+        data: { session },
+      } = await supabase.auth.getSession();
+      const currentUser = session?.user;
+      if (!currentUser) return;
 
-      const [{ data: alloc }, { data: expenses }] = await Promise.all([
-        supabase
-          .from("user_allocations")
-          .select("amount")
-          .eq("user_id", userId)
-          .maybeSingle(),
-        supabase.from("expenses").select("amount").eq("created_by", userId),
-      ]);
+      setUserId(currentUser.id);
 
-      const allocated = Number(alloc?.amount || 0);
-      const spent =
-        expenses?.reduce((sum, e) => sum + Number(e.amount), 0) || 0;
-      setRemaining(allocated - spent);
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("id", currentUser.id)
+        .single();
+
+      if (roleData?.role === "admin") {
+        setIsAdmin(true);
+        const { data: allUsers } = await supabase
+          .from("users")
+          .select("id, full_name")
+          .order("full_name");
+
+        if (allUsers) setUsers(allUsers);
+      }
     };
 
-    fetchRemaining();
+    init();
   }, []);
 
-  const handleSubmit = async () => {
-    setError("");
-    const amt = parseFloat(amount);
-    if (!category || !amt) {
-      setError("Please fill category and amount");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userId || !amount) {
+      toast.error("Please fill all required fields.");
       return;
     }
 
-    if (remaining !== null && amt > remaining) {
-      setError(`Insufficient funds. You have ₹${remaining} left.`);
-      return;
-    }
-
-    let receipt_url = "";
-
-    if (file) {
-      const filename = `${Date.now()}_${file.name}`;
-      const { data, error: uploadError } = await supabase.storage
-        .from("receipts")
-        .upload(filename, file);
-
-      if (uploadError) {
-        setError("Failed to upload receipt.");
-        return;
-      }
-
-      const { data: urlData } = supabase.storage
-        .from("receipts")
-        .getPublicUrl(filename);
-      receipt_url = urlData?.publicUrl || "";
-    }
-
-    const { error: insertError } = await supabase.from("expenses").insert({
-      amount: amt,
+    setLoading(true);
+    const { error } = await supabase.from("expenses").insert({
+      user_id: userId,
+      amount: Number(amount),
       category,
-      description,
-      receipt_url,
+      note,
+      date: new Date().toISOString(),
     });
 
-    if (insertError) {
-      setError(insertError.message);
+    setLoading(false);
+
+    if (error) {
+      console.error(error);
+      toast.error("Failed to save expense.");
     } else {
-      router.push("/dashboard/user");
+      toast.success("Expense saved!");
+      router.push("/expense/list");
     }
   };
 
   return (
-    <div className="max-w-xl mx-auto py-10 space-y-4">
-      <h1 className="text-xl font-bold">Add Expense</h1>
+    <div className="p-4 pb-24 max-w-xl mx-auto">
+      <h1 className="text-xl font-bold mb-4">Add Expense</h1>
 
-      {remaining !== null && (
-        <p className="text-sm text-muted-foreground">
-          Remaining Funds: ₹{remaining}
-        </p>
-      )}
-      {error && <p className="text-red-600">{error}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {isAdmin && (
+          <div>
+            <Label>User</Label>
+            <Select
+              onValueChange={(value) => setUserId(value)}
+              defaultValue={userId}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select user" />
+              </SelectTrigger>
+              <SelectContent>
+                {users.map((u) => (
+                  <SelectItem key={u.id} value={u.id}>
+                    {u.full_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
-      <div className="space-y-3">
-        <Label>Category</Label>
-        <Input value={category} onChange={(e) => setCategory(e.target.value)} />
+        <div>
+          <Label>Amount</Label>
+          <Input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+          />
+        </div>
 
-        <Label>Amount</Label>
-        <Input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
+        <div>
+          <Label>Category</Label>
+          <Input
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          />
+        </div>
 
-        <Label>Description</Label>
-        <Textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+        <div>
+          <Label>Note</Label>
+          <Textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Optional description or bill info"
+          />
+        </div>
 
-        <Label>Upload Receipt (PDF/Image)</Label>
-        <Input
-          type="file"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
-        />
-
-        <Button onClick={handleSubmit}>Submit Expense</Button>
-      </div>
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? "Saving..." : "Submit Expense"}
+        </Button>
+      </form>
     </div>
   );
 }
