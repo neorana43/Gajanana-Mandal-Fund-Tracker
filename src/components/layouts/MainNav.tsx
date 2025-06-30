@@ -64,9 +64,8 @@ export default function MainNav() {
         ) : (
           <Button
             size="sm"
-            variant="outline"
             onClick={handleLogout}
-            className="border-white text-white hover:bg-white/20"
+            className="bg-maroon hover:bg-maroon/90 text-white"
           >
             Logout
           </Button>
