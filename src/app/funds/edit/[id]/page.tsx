@@ -119,16 +119,16 @@ export default function EditAllocationPage() {
 
   return (
     <div className="p-4 max-w-md mx-auto">
-      <div className="mb-4">
+      <div className="flex items-center mb-4">
         <Link href="/funds/list">
-          <Button variant="outline" size="sm">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
+          <Button variant="outline" size="icon">
+            <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
+        <h1 className="text-xl font-bold ml-4">Edit Fund</h1>
       </div>
-      <h1 className="text-xl font-bold mb-4">Edit Fund Allocation</h1>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
           <FormField
             control={form.control}
             name="user"

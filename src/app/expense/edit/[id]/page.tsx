@@ -164,22 +164,15 @@ export default function EditExpensePage() {
   return (
     <div className="p-4 pb-24 max-w-xl mx-auto">
       <div className="flex items-center mb-4">
-        <Link href="/expense/list" className="mr-4">
+        <Link href="/expense/list">
           <Button variant="outline" size="icon">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
-        <h1 className="text-xl font-bold mb-4">Edit Expense</h1>
-      </div>
-      <div className="mb-4">
-        <Link href="/expense/list">
-          <Button variant="outline" size="sm">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
-          </Button>
-        </Link>
+        <h1 className="text-xl font-bold ml-4">Edit Expense</h1>
       </div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
           <FormField
             control={form.control}
             name="amount"

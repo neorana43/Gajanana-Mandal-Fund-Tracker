@@ -17,6 +17,8 @@ type AllocationData = {
   user_display_name: string | null;
 };
 
+const COLORS = ["#a78bfa", "#06b6d4", "#f59e42", "#22c55e", "#6366f1"]; // violet, cyan, orange, green, indigo
+
 export default function UserAllocationChart({
   data,
 }: {
@@ -35,24 +37,39 @@ export default function UserAllocationChart({
     {} as Record<string, { amount: number; name: string }>,
   );
 
-  const chartData = Object.values(aggregatedData).map((item) => ({
-    user: item.name,
-    amount: item.amount,
-  }));
-
+  const chartData = Object.values(aggregatedData);
   return (
-    <div className="w-full h-80">
+    <div className="w-full h-80 bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-4 flex items-center justify-center">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={chartData}
-          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+          margin={{ top: 16, right: 16, left: 0, bottom: 0 }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="user" />
-          <YAxis />
-          <Tooltip formatter={(value) => `₹${value}`} />
-          <Legend />
-          <Bar dataKey="amount" fill="#8884d8" name="Allocated Amount" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <XAxis
+            dataKey="name"
+            stroke="#a78bfa"
+            fontSize={12}
+            fontWeight={600}
+          />
+          <YAxis stroke="#a78bfa" fontSize={12} fontWeight={600} />
+          <Tooltip
+            contentStyle={{
+              borderRadius: 16,
+              background: "#fff",
+              color: "#6366f1",
+              fontWeight: 500,
+            }}
+            formatter={(val) => `\u20b9${val}`}
+          />
+          <Legend
+            wrapperStyle={{
+              color: "#a78bfa",
+              fontWeight: 600,
+              fontFamily: "inherit",
+            }}
+          />
+          <Bar dataKey="amount" fill={COLORS[0]} radius={[16, 16, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

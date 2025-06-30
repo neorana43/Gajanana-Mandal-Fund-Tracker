@@ -36,10 +36,10 @@ export default function FundPieChart({
     data.push({ name: "Balance", value: balance });
   }
 
-  const COLORS = ["#6366f1", "#14b8a6", "#ef4444", "#10b981"]; // indigo, teal, red, green
+  const COLORS = ["#a78bfa", "#06b6d4", "#f59e42", "#22c55e", "#6366f1"]; // violet, cyan, orange, green, indigo
 
   return (
-    <div className="w-full h-64">
+    <div className="w-full h-80 bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-4 flex items-center justify-center">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
@@ -49,18 +49,37 @@ export default function FundPieChart({
             cy="50%"
             outerRadius={80}
             label={({ name, value }) => (value && value > 0 ? name : null)}
+            stroke="#fff"
+            strokeWidth={2}
           >
             {data.map((entry, index) =>
               entry.value > 0 ? (
                 <Cell
                   key={`cell-${index}`}
                   fill={COLORS[index % COLORS.length]}
+                  style={{
+                    filter: "drop-shadow(0 2px 8px rgba(99,102,241,0.08))",
+                  }}
                 />
               ) : null,
             )}
           </Pie>
-          <Tooltip formatter={(val) => `₹${val}`} />
-          <Legend />
+          <Tooltip
+            contentStyle={{
+              borderRadius: 16,
+              background: "#fff",
+              color: "#6366f1",
+              fontWeight: 500,
+            }}
+            formatter={(val) => `\u20b9${val}`}
+          />
+          <Legend
+            wrapperStyle={{
+              color: "#a78bfa",
+              fontWeight: 600,
+              fontFamily: "inherit",
+            }}
+          />
         </PieChart>
       </ResponsiveContainer>
     </div>

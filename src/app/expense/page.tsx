@@ -23,8 +23,8 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 type ExpenseFormData = {
   userId: string;
@@ -138,16 +138,16 @@ export default function ExpenseForm() {
 
   return (
     <div className="p-4 pb-24 max-w-xl mx-auto">
-      <div className="mb-4">
+      <div className="flex items-center mb-4">
         <Link href="/expense/list">
-          <Button variant="outline" size="sm">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
+          <Button variant="outline" size="icon">
+            <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
+        <h1 className="text-xl font-bold ml-4">Add Expense</h1>
       </div>
-      <h1 className="text-xl font-bold mb-4">Add Expense</h1>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
           {isAdmin && (
             <FormField
               control={form.control}

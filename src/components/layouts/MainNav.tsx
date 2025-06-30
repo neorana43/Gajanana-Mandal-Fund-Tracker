@@ -99,8 +99,8 @@ export default function MainNav() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-background border-t shadow-sm">
-        <ul className="relative flex justify-between items-center px-4 py-2">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-gray-900 border-none shadow-xl h-16 flex items-center px-0 md:px-12 rounded-3xl mt-2 md:mx-2">
+        <ul className="relative flex justify-between items-center px-4 py-2 w-full">
           {navItems(role, isLoggedIn).map((item) => {
             const isActive = pathname.startsWith(item.href);
 
@@ -113,9 +113,9 @@ export default function MainNav() {
                   <Button
                     onClick={() => setShowMenu(true)}
                     variant={"ghost"}
-                    className="relative flex flex-col items-center text-xs font-medium text-muted-foreground hover:bg-transparent cursor-pointer hover:text-primary transition"
+                    className="relative flex h-fit gap-0 py-0 !px-0 min-w-fit flex-col shadow-none items-center text-xs font-medium text-muted-foreground hover:bg-transparent cursor-pointer hover:text-primary transition transform-none active:scale-100 hover:scale-100 hover:-translate-y-0 active:-translate-y-0"
                   >
-                    <item.icon className="h-5 w-5 mb-1" />
+                    <item.icon className="h-5 w-5 mb-1 transition-transform duration-200" />
                     {item.label}
                   </Button>
                 </li>
@@ -157,7 +157,7 @@ export default function MainNav() {
               <Button
                 onClick={handleLogout}
                 variant={"ghost"}
-                className="relative flex flex-col items-center hover:bg-transparent cursor-pointer text-xs font-medium transition-all duration-200 ease-in-out hover:no-underline hover:text-primary hover:font-semibold"
+                className="relative flex h-fit flex-col gap-0 py-0 !px-0 min-w-fit shadow-none items-center hover:bg-transparent cursor-pointer text-xs font-medium transition-all duration-200 ease-in-out hover:no-underline hover:text-primary hover:font-semibold transform-none active:scale-100 hover:scale-100 hover:-translate-y-0 active:-translate-y-0"
               >
                 <LogOut className="h-5 w-5 mb-1 transition-transform duration-200" />
                 Logout
@@ -198,7 +198,7 @@ export default function MainNav() {
             </ul>
             <Button
               onClick={() => setShowMenu(false)}
-              className="mt-4 w-full text-sm text-muted-foreground"
+              className="mt-4 w-full text-sm "
             >
               Close
             </Button>

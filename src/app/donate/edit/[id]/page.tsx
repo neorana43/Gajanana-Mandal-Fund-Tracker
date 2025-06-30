@@ -117,15 +117,8 @@ export default function EditDonationPage() {
         </Link>
         <h1 className="text-xl font-bold mb-4">Edit Donation</h1>
       </div>
-      <div className="mb-4">
-        <Link href="/donate/list">
-          <Button variant="outline" size="sm">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
-          </Button>
-        </Link>
-      </div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
           <FormField
             control={form.control}
             name="donorName"

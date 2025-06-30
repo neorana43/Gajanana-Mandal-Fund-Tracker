@@ -15,10 +15,10 @@ export default function DashboardTabs({
         {tabs.map((tab, index) => (
           <button
             key={index}
-            className={`py-2 px-3 whitespace-nowrap text-sm font-medium ${
+            className={`py-2 px-3 whitespace-nowrap rounded-none cursor-pointer text-sm font-medium border-0 border-b-2 focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 active:outline-none active:ring-0 ${
               index === activeTab
-                ? "border-b-2 border-primary text-primary"
-                : "text-muted-foreground hover:text-primary"
+                ? "border-primary text-primary"
+                : "border-b-0 text-muted-foreground hover:text-primary"
             }`}
             onClick={() => setActiveTab(index)}
           >
