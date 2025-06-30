@@ -3,7 +3,6 @@
 import { useTransition } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import {
   Select,
@@ -13,36 +12,42 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
-
-type UserType = "admin" | "volunteer";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 
 export default function AddUserPage() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const displayName = formData.get("displayName") as string;
-    const phone = formData.get("phone") as string;
-    const userType = formData.get("userType") as UserType;
+  const form = useForm({
+    defaultValues: {
+      displayName: "",
+      email: "",
+      password: "",
+      phone: "",
+      userType: "",
+    },
+  });
 
-    if (!userType) {
+  const onSubmit = (data: Record<string, string>) => {
+    if (!data.userType) {
       toast.error("Please select a user type.");
       return;
     }
-
     startTransition(async () => {
       const response = await fetch("/api/users/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, displayName, phone, userType }),
+        body: JSON.stringify(data),
       });
-
       const result = await response.json();
-
       if (!response.ok) {
         toast.error(result.error || "Failed to create user.");
       } else {
@@ -55,77 +60,100 @@ export default function AddUserPage() {
   return (
     <div className="p-4 pb-24 max-w-xl mx-auto">
       <h1 className="text-xl font-bold mb-4">Add New User</h1>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label htmlFor="displayName" className="mb-1.5 block">
-            Display Name
-          </Label>
-          <Input
-            id="displayName"
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
             name="displayName"
-            placeholder="John Doe"
-            required
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Display Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="John Doe" required {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-
-        <div>
-          <Label htmlFor="email" className="mb-1.5 block">
-            Email
-          </Label>
-          <Input
-            id="email"
+          <FormField
+            control={form.control}
             name="email"
-            type="email"
-            placeholder="newuser@example.com"
-            required
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="newuser@example.com"
+                    required
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-
-        <div>
-          <Label htmlFor="password" className="mb-1.5 block">
-            Password
-          </Label>
-          <Input
-            id="password"
+          <FormField
+            control={form.control}
             name="password"
-            type="password"
-            placeholder="••••••••"
-            required
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
+                    required
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-
-        <div>
-          <Label htmlFor="phone" className="mb-1.5 block">
-            Phone Number (Optional)
-          </Label>
-          <Input
-            id="phone"
+          <FormField
+            control={form.control}
             name="phone"
-            type="tel"
-            placeholder="+91 98765 43210"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number (Optional)</FormLabel>
+                <FormControl>
+                  <Input type="tel" placeholder="+91 98765 43210" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-
-        <div>
-          <Label htmlFor="userType" className="mb-1.5 block">
-            User Type
-          </Label>
-          <Select name="userType" required>
-            <SelectTrigger>
-              <SelectValue placeholder="Select user type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="volunteer">Volunteer</SelectItem>
-              <SelectItem value="admin">Admin</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Button type="submit" disabled={isPending} className="w-full">
-          {isPending ? "Creating..." : "Create User"}
-        </Button>
-      </form>
+          <FormField
+            control={form.control}
+            name="userType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>User Type</FormLabel>
+                <FormControl>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    required
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select user type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="volunteer">Volunteer</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit" disabled={isPending} className="w-full">
+            {isPending ? "Creating..." : "Create User"}
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 }

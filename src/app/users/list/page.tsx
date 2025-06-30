@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -14,7 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Plus } from "lucide-react";
 import Link from "next/link";
 
 type UserType = "admin" | "volunteer";
@@ -76,9 +77,11 @@ export default function ListUsersPage() {
     <div className="p-4 pb-24 max-w-xl mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">Users</h1>
-        <Button asChild>
-          <Link href="/users/add">Add User</Link>
-        </Button>
+        <Link href="/users/add">
+          <Button>
+            <Plus className="mr-2 h-4 w-4" /> Add User
+          </Button>
+        </Link>
       </div>
 
       {loading ? (
@@ -86,30 +89,51 @@ export default function ListUsersPage() {
       ) : users.length === 0 ? (
         <p className="text-sm text-muted-foreground">No users found.</p>
       ) : (
-        <ul className="space-y-2 text-sm">
+        <ul className="space-y-4 text-sm">
           {users.map((user) => (
-            <li key={user.id} className="border rounded p-3 bg-card shadow-sm">
-              <div className="flex justify-between items-start">
-                <div className="space-y-1">
-                  <div className="font-medium">{user.displayName}</div>
-                  <div className="text-muted-foreground">{user.email}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {user.phone}
-                  </div>
-                  <div className="text-xs font-medium capitalize">
-                    Type: {user.userType}
+            <li key={user.id}>
+              <Card className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="space-y-1">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 w-full">
+                      <div className="text-xs text-muted-foreground font-medium col-span-1">
+                        Name:
+                      </div>
+                      <div className="col-span-1 font-medium">
+                        {user.displayName}
+                      </div>
+                      <div className="text-xs text-muted-foreground font-medium col-span-1">
+                        Email:
+                      </div>
+                      <div className="col-span-1">{user.email}</div>
+                      <div className="text-xs text-muted-foreground font-medium col-span-1">
+                        Number:
+                      </div>
+                      <div className="col-span-1">{user.phone}</div>
+                      <div className="text-xs text-muted-foreground font-medium col-span-1">
+                        Type:
+                      </div>
+                      <div className="col-span-1 capitalize">
+                        {user.userType}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button asChild variant="ghost" size="icon">
-                    <Link href={`/users/edit/${user.id}`}>
-                      <Pencil className="h-4 w-4" />
-                    </Link>
+                <div className="flex items-center justify-end gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      (window.location.href = `/users/edit/${user.id}`)
+                    }
+                  >
+                    <Pencil className="h-3 w-3 mr-2" />
+                    Edit
                   </Button>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <Trash2 className="h-4 w-4 text-destructive" />
+                      <Button variant="destructive" size="sm">
+                        <Trash2 className="h-3 w-3 mr-2" /> Delete
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
@@ -124,7 +148,6 @@ export default function ListUsersPage() {
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => handleDelete(user.id)}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           disabled={isPending}
                         >
                           {isPending ? "Deleting..." : "Delete"}
@@ -133,7 +156,7 @@ export default function ListUsersPage() {
                     </AlertDialogContent>
                   </AlertDialog>
                 </div>
-              </div>
+              </Card>
             </li>
           ))}
         </ul>

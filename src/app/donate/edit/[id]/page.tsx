@@ -6,10 +6,18 @@ import { useRouter, useParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 
 export default function EditDonationPage() {
   const supabase = createClient();
@@ -17,13 +25,26 @@ export default function EditDonationPage() {
   const params = useParams();
   const id = params.id as string;
 
-  const [donorName, setDonorName] = useState("");
-  const [amount, setAmount] = useState("");
-  const [contact, setContact] = useState("");
-  const [houseNumber, setHouseNumber] = useState("");
-  const [isRecurring, setIsRecurring] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
+
+  type EditDonationFormData = {
+    donorName: string;
+    houseNumber: string;
+    amount: string;
+    contact: string;
+    isRecurring: boolean;
+  };
+
+  const form = useForm<EditDonationFormData>({
+    defaultValues: {
+      donorName: "",
+      houseNumber: "",
+      amount: "",
+      contact: "",
+      isRecurring: false,
+    },
+  });
 
   useEffect(() => {
     const fetchDonation = async () => {
@@ -39,11 +60,13 @@ export default function EditDonationPage() {
         toast.error("Failed to fetch donation details.");
         router.push("/donate/list");
       } else {
-        setDonorName(data.donor_name);
-        setAmount(data.amount.toString());
-        setContact(data.contact || "");
-        setHouseNumber(data.house_number || "");
-        setIsRecurring(data.is_recurring || false);
+        form.reset({
+          donorName: data.donor_name,
+          houseNumber: data.house_number || "",
+          amount: data.amount.toString(),
+          contact: data.contact || "",
+          isRecurring: data.is_recurring || false,
+        });
       }
       setIsFetching(false);
     };
@@ -51,28 +74,23 @@ export default function EditDonationPage() {
     fetchDonation();
   }, [id, router]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!donorName || !amount) {
+  const onSubmit = async (data: EditDonationFormData) => {
+    if (!data.donorName || !data.amount) {
       toast.error("Please fill all required fields.");
       return;
     }
-
     setLoading(true);
-
     const { error } = await supabase
       .from("donations")
       .update({
-        donor_name: donorName,
-        amount: Number(amount),
-        contact,
-        house_number: houseNumber,
-        is_recurring: isRecurring,
+        donor_name: data.donorName,
+        amount: Number(data.amount),
+        contact: data.contact,
+        house_number: data.houseNumber,
+        is_recurring: data.isRecurring,
       })
       .eq("id", id);
-
     setLoading(false);
-
     if (error) {
       toast.error("Failed to update donation.");
     } else {
@@ -99,60 +117,89 @@ export default function EditDonationPage() {
         </Link>
         <h1 className="text-xl font-bold">Edit Donation</h1>
       </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label htmlFor="donorName">Donor Name</Label>
-          <Input
-            id="donorName"
-            value={donorName}
-            onChange={(e) => setDonorName(e.target.value)}
-            required
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="donorName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Donor Name</FormLabel>
+                <FormControl>
+                  <Input required {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-        <div>
-          <Label htmlFor="houseNumber">House Number (Optional)</Label>
-          <Input
-            id="houseNumber"
-            value={houseNumber}
-            onChange={(e) => setHouseNumber(e.target.value)}
+          <FormField
+            control={form.control}
+            name="houseNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>House Number (Optional)</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-        <div>
-          <Label htmlFor="amount">Amount</Label>
-          <Input
-            id="amount"
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            required
+          <FormField
+            control={form.control}
+            name="amount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Amount</FormLabel>
+                <FormControl>
+                  <Input type="number" required {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-        <div>
-          <Label htmlFor="contact">Contact (Optional)</Label>
-          <Input
-            id="contact"
-            value={contact}
-            onChange={(e) => setContact(e.target.value)}
+          <FormField
+            control={form.control}
+            name="contact"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Contact (Optional)</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="isRecurring"
-            checked={isRecurring}
-            onCheckedChange={(checked) => setIsRecurring(Boolean(checked))}
+          <FormField
+            control={form.control}
+            name="isRecurring"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center space-x-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      id="isRecurring"
+                    />
+                  </FormControl>
+                  <label
+                    htmlFor="isRecurring"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Is this a recurring donation?
+                  </label>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          <label
-            htmlFor="isRecurring"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Is this a recurring donation?
-          </label>
-        </div>
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Saving..." : "Update Donation"}
-        </Button>
-      </form>
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Saving..." : "Update Donation"}
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 }

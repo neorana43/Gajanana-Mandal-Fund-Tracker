@@ -6,7 +6,22 @@ import { useRouter, useParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Label } from "@/components/ui/label";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type User = {
   id: string;
@@ -20,8 +35,12 @@ export default function EditAllocationPage() {
 
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<User[]>([]);
-  const [selectedUser, setSelectedUser] = useState<string>("");
-  const [amount, setAmount] = useState("");
+  const form = useForm({
+    defaultValues: {
+      user: "",
+      amount: "",
+    },
+  });
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -47,8 +66,10 @@ export default function EditAllocationPage() {
           toast.error("Failed to fetch allocation data.");
           router.push("/funds/list");
         } else if (allocationData) {
-          setSelectedUser(allocationData.user_id || "");
-          setAmount(String(allocationData.amount));
+          form.reset({
+            user: allocationData.user_id || "",
+            amount: String(allocationData.amount),
+          });
         }
       } catch (error) {
         toast.error("An error occurred while loading data.");
@@ -61,27 +82,22 @@ export default function EditAllocationPage() {
     if (id) {
       fetchInitialData();
     }
-  }, [id, router, supabase]);
+  }, [id, router, supabase, form]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedUser || !amount) {
+  const onSubmit = async (data: { user: string; amount: string }) => {
+    if (!data.user || !data.amount) {
       toast.error("All fields are required.");
       return;
     }
-
     setLoading(true);
-
     const { error } = await supabase
       .from("user_allocations")
       .update({
-        user_id: selectedUser,
-        amount: parseFloat(amount),
+        user_id: data.user,
+        amount: parseFloat(data.amount),
       })
       .eq("id", id);
-
     setLoading(false);
-
     if (error) {
       toast.error("Failed to update allocation.");
       console.error(error);
@@ -102,45 +118,54 @@ export default function EditAllocationPage() {
   return (
     <div className="p-4 max-w-md mx-auto">
       <h1 className="text-xl font-bold mb-4">Edit Fund Allocation</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label htmlFor="user" className="mb-1.5 block">
-            Select User
-          </Label>
-          <select
-            id="user"
-            value={selectedUser}
-            onChange={(e) => setSelectedUser(e.target.value)}
-            className="w-full p-2 border rounded"
-          >
-            <option value="" disabled>
-              Select a user
-            </option>
-            {users.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.displayName}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <Label htmlFor="amount" className="mb-1.5 block">
-            Amount
-          </Label>
-          <Input
-            id="amount"
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            required
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="user"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Select User</FormLabel>
+                <FormControl>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    required
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a user" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {users.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.displayName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Saving..." : "Save Changes"}
-        </Button>
-      </form>
+          <FormField
+            control={form.control}
+            name="amount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Amount</FormLabel>
+                <FormControl>
+                  <Input type="number" required {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Saving..." : "Save Changes"}
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 }

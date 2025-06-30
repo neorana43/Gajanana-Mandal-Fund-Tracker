@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
       const simplifiedUser = {
         id: user.id,
         email: user.email,
-        displayName: user.user_metadata?.displayName,
+        displayName: user.user_metadata?.display_name,
         phone: user.user_metadata?.phone,
         userType: roleData?.role || "volunteer",
       };
@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
     const simplifiedUsers = data.users.map((u) => ({
       id: u.id,
       email: u.email,
-      displayName: u.user_metadata?.displayName,
+      displayName: u.user_metadata?.display_name,
       phone: u.user_metadata?.phone,
       userType: roleMap.get(u.id) || "volunteer", // Default to volunteer
     }));

@@ -4,31 +4,41 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 
 export default function AddSponsorPage() {
   const supabase = createClient();
   const router = useRouter();
 
-  const [sponsorName, setSponsorName] = useState("");
-  const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
-  const [isFull, setIsFull] = useState(false);
   const [loading, setLoading] = useState(false);
+  const form = useForm({
+    defaultValues: {
+      sponsorName: "",
+      amount: "",
+      category: "",
+      description: "",
+      isFull: false,
+    },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!sponsorName || !amount) {
+  const onSubmit = async (data: Record<string, string | boolean>) => {
+    if (!data.sponsorName || !data.amount) {
       toast.error("Sponsor name and amount are required.");
       return;
     }
     setLoading(true);
-
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -37,18 +47,15 @@ export default function AddSponsorPage() {
       setLoading(false);
       return;
     }
-
     const { error } = await supabase.from("sponsors").insert({
-      sponsor_name: sponsorName,
-      amount: Number(amount),
-      category: category,
-      description: description,
-      is_full: isFull,
+      sponsor_name: data.sponsorName,
+      amount: Number(data.amount),
+      category: data.category,
+      description: data.description,
+      is_full: data.isFull,
       created_by: user.id,
     });
-
     setLoading(false);
-
     if (error) {
       toast.error(`Failed to save sponsor: ${error.message}`);
     } else {
@@ -61,59 +68,89 @@ export default function AddSponsorPage() {
     <div className="p-4 pb-24 max-w-xl mx-auto">
       <h1 className="text-xl font-bold mb-4">Add Sponsor</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label htmlFor="sponsorName">Sponsor Name</Label>
-          <Input
-            id="sponsorName"
-            value={sponsorName}
-            onChange={(e) => setSponsorName(e.target.value)}
-            required
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="sponsorName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Sponsor Name</FormLabel>
+                <FormControl>
+                  <Input required {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-        <div>
-          <Label htmlFor="amount">Amount</Label>
-          <Input
-            id="amount"
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            required
+          <FormField
+            control={form.control}
+            name="amount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Amount</FormLabel>
+                <FormControl>
+                  <Input type="number" required {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-        <div>
-          <Label htmlFor="category">Category</Label>
-          <Input
-            id="category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-        <div>
-          <Label htmlFor="description">Description (Optional)</Label>
-          <Textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description (Optional)</FormLabel>
+                <FormControl>
+                  <Textarea {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="isFull"
-            checked={isFull}
-            onCheckedChange={(checked) => setIsFull(Boolean(checked))}
+          <FormField
+            control={form.control}
+            name="isFull"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center space-x-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      id="isFull"
+                    />
+                  </FormControl>
+                  <label
+                    htmlFor="isFull"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Is this a full sponsorship?
+                  </label>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          <label
-            htmlFor="isFull"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Is this a full sponsorship?
-          </label>
-        </div>
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Saving..." : "Add Sponsor"}
-        </Button>
-      </form>
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Saving..." : "Add Sponsor"}
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 }

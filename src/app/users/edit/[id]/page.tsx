@@ -3,7 +3,6 @@
 import { useEffect, useState, useTransition } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import {
   Select,
@@ -13,6 +12,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter, useParams } from "next/navigation";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 
 type UserType = "admin" | "volunteer";
 
@@ -33,6 +41,16 @@ export default function EditUserPage() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<EditUserFormData | null>(null);
 
+  const form = useForm<EditUserFormData>({
+    defaultValues: {
+      id: userId,
+      email: "",
+      displayName: "",
+      phone: "",
+      userType: "volunteer",
+    },
+  });
+
   useEffect(() => {
     if (!userId) return;
 
@@ -48,6 +66,7 @@ export default function EditUserPage() {
 
         if (currentUser) {
           setUser(currentUser);
+          form.reset(currentUser);
         } else {
           toast.error("User not found.");
           router.push("/users/list");
@@ -61,17 +80,15 @@ export default function EditUserPage() {
     };
 
     fetchUserData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, router]);
 
-  const handleEdit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!user) return;
-
+  const onSubmit = (data: EditUserFormData) => {
     startTransition(async () => {
       const response = await fetch("/api/users/update", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(user),
+        body: JSON.stringify(data),
       });
 
       const result = await response.json();
@@ -100,79 +117,82 @@ export default function EditUserPage() {
   return (
     <div className="p-4 pb-24 max-w-xl mx-auto">
       <h1 className="text-xl font-bold mb-4">Edit User</h1>
-      <form onSubmit={handleEdit} className="space-y-4">
-        <div>
-          <Label htmlFor="displayName" className="mb-1.5 block">
-            Display Name
-          </Label>
-          <Input
-            id="displayName"
-            value={user.displayName || ""}
-            onChange={(e) =>
-              setUser(
-                (prev) => prev && { ...prev, displayName: e.target.value },
-              )
-            }
-            placeholder="John Doe"
-            required
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="displayName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Display Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="John Doe" required {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-
-        <div>
-          <Label htmlFor="email" className="mb-1.5 block">
-            Email
-          </Label>
-          <Input
-            id="email"
-            type="email"
-            value={user.email || ""}
-            onChange={(e) =>
-              setUser((prev) => prev && { ...prev, email: e.target.value })
-            }
-            placeholder="user@example.com"
-            required
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="user@example.com"
+                    required
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-
-        <div>
-          <Label htmlFor="phone" className="mb-1.5 block">
-            Phone Number (Optional)
-          </Label>
-          <Input
-            id="phone"
-            type="tel"
-            value={user.phone || ""}
-            onChange={(e) =>
-              setUser((prev) => prev && { ...prev, phone: e.target.value })
-            }
-            placeholder="+91 98765 43210"
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number (Optional)</FormLabel>
+                <FormControl>
+                  <Input type="tel" placeholder="+91 98765 43210" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-
-        <div>
-          <Label htmlFor="userType" className="mb-1.5 block">
-            User Type
-          </Label>
-          <Select
-            value={user.userType}
-            onValueChange={(value: UserType) =>
-              setUser((prev) => prev && { ...prev, userType: value })
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select user type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="volunteer">Volunteer</SelectItem>
-              <SelectItem value="admin">Admin</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Button type="submit" disabled={isPending} className="w-full">
-          {isPending ? "Saving..." : "Save Changes"}
-        </Button>
-      </form>
+          <FormField
+            control={form.control}
+            name="userType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>User Type</FormLabel>
+                <FormControl>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    required
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select user type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="volunteer">Volunteer</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit" disabled={isPending} className="w-full">
+            {isPending ? "Saving..." : "Save Changes"}
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 }
