@@ -16,6 +16,8 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export default function DonatePage() {
   const supabase = createClient();
@@ -75,7 +77,14 @@ export default function DonatePage() {
 
   return (
     <div className="p-4 max-w-md mx-auto">
-      <h1 className="text-2xl font-bold text-center mb-6">Make a Donation</h1>
+      <div className="mb-4">
+        <Link href="/donate/list">
+          <Button variant="outline" size="sm">
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
+          </Button>
+        </Link>
+      </div>
+      <h1 className="text-xl font-bold mb-4">Make a Donation</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField

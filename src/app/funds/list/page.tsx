@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Card } from "@/components/ui/card";
 
 type Allocation = Tables<"user_allocations"> & {
   user_email: string;
@@ -91,60 +92,62 @@ export default function AllocationListPage() {
       ) : (
         <ul className="space-y-4">
           {allocations.map((alloc) => (
-            <li
-              key={alloc.id}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow border p-4"
-            >
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex-1">
-                  <span className="font-medium text-sm">
-                    To: {alloc.user_display_name || alloc.user_email || "N/A"}
-                  </span>
-                  <div className="text-xs text-muted-foreground mt-0.5">
-                    By: {alloc.admin_display_name || alloc.admin_email || "N/A"}
+            <li key={alloc.id}>
+              <Card className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex-1">
+                    <span className="font-medium text-sm">
+                      To: {alloc.user_display_name || alloc.user_email || "N/A"}
+                    </span>
+                    <div className="text-xs text-muted-foreground mt-0.5">
+                      By:{" "}
+                      {alloc.admin_display_name || alloc.admin_email || "N/A"}
+                    </div>
                   </div>
+                  <span className="text-primary font-semibold text-base">
+                    ₹{alloc.amount}
+                  </span>
                 </div>
-                <span className="text-primary font-semibold text-base">
-                  ₹{alloc.amount}
-                </span>
-              </div>
 
-              <div className="text-xs text-muted-foreground mt-1">
-                {format(new Date(alloc.created_at!), "dd MMM yyyy, p")}
-              </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {format(new Date(alloc.created_at!), "dd MMM yyyy, p")}
+                </div>
 
-              <div className="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => router.push(`/funds/edit/${alloc.id}`)}
-                >
-                  <Pencil className="h-3 w-3 mr-2" />
-                  Edit
-                </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive" size="sm">
-                      <Trash className="h-3 w-3 mr-2" /> Delete
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete the allocation record.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleDelete(alloc.id)}>
-                        Continue
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
+                <div className="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => router.push(`/funds/edit/${alloc.id}`)}
+                  >
+                    <Pencil className="h-3 w-3 mr-2" />
+                    Edit
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" size="sm">
+                        <Trash className="h-3 w-3 mr-2" /> Delete
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently
+                          delete the allocation record.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDelete(alloc.id)}
+                        >
+                          Continue
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </Card>
             </li>
           ))}
         </ul>

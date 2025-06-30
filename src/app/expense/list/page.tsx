@@ -21,6 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Card } from "@/components/ui/card";
 
 type Expense = Tables<"expenses">;
 
@@ -117,92 +118,91 @@ export default function ExpenseListPage() {
       ) : (
         <ul className="space-y-4">
           {filteredExpenses.map((expense) => (
-            <li
-              key={expense.id}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow border p-4"
-            >
-              <div className="flex justify-between items-start mb-1">
-                <div className="flex-1">
-                  <span className="font-medium text-sm capitalize">
-                    {expense.category}
-                  </span>
-                  <div className="text-xs text-muted-foreground mt-0.5">
-                    {format(new Date(expense.date), "dd MMM yyyy")}
+            <li key={expense.id}>
+              <Card className="p-4">
+                <div className="flex justify-between items-start mb-1">
+                  <div className="flex-1">
+                    <span className="font-medium text-sm capitalize">
+                      {expense.category}
+                    </span>
+                    <div className="text-xs text-muted-foreground mt-0.5">
+                      {format(new Date(expense.date), "dd MMM yyyy")}
+                    </div>
                   </div>
+
+                  <span className="text-destructive font-semibold text-base">
+                    ₹{expense.amount}
+                  </span>
                 </div>
 
-                <span className="text-destructive font-semibold text-base">
-                  ₹{expense.amount}
-                </span>
-              </div>
-
-              {expense.description && (
-                <p className="text-sm my-2 text-gray-700 dark:text-gray-300">
-                  {expense.description}
-                </p>
-              )}
-              {expense.bill_url && (
-                <div className="mt-2">
-                  {expense.bill_url.toLowerCase().endsWith(".pdf") ? (
-                    <a
-                      href={expense.bill_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      download
-                      className="text-sm text-primary hover:underline flex items-center gap-2"
-                    >
-                      <FileText className="h-4 w-4" />
-                      View/Download Receipt
-                    </a>
-                  ) : (
-                    <a href={expense.bill_url} download target="_blank">
-                      <Image
-                        src={expense.bill_url}
-                        alt="Receipt"
-                        width={80}
-                        height={80}
-                        className="rounded border object-cover"
-                      />
-                    </a>
-                  )}
-                </div>
-              )}
-              <div className="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => router.push(`/expense/edit/${expense.id}`)}
-                >
-                  <Pencil className="h-3 w-3 mr-2" />
-                  Edit
-                </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive" size="sm">
-                      <Trash className="h-3 w-3 mr-2" /> Delete
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you absolutely sure?
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete the expense record and its associated receipt.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handleDelete(expense.id)}
+                {expense.description && (
+                  <p className="text-sm my-2 text-gray-700 dark:text-gray-300">
+                    {expense.description}
+                  </p>
+                )}
+                {expense.bill_url && (
+                  <div className="mt-2">
+                    {expense.bill_url.toLowerCase().endsWith(".pdf") ? (
+                      <a
+                        href={expense.bill_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        download
+                        className="text-sm text-primary hover:underline flex items-center gap-2"
                       >
-                        Continue
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
+                        <FileText className="h-4 w-4" />
+                        View/Download Receipt
+                      </a>
+                    ) : (
+                      <a href={expense.bill_url} download target="_blank">
+                        <Image
+                          src={expense.bill_url}
+                          alt="Receipt"
+                          width={80}
+                          height={80}
+                          className="rounded border object-cover"
+                        />
+                      </a>
+                    )}
+                  </div>
+                )}
+                <div className="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => router.push(`/expense/edit/${expense.id}`)}
+                  >
+                    <Pencil className="h-3 w-3 mr-2" />
+                    Edit
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" size="sm">
+                        <Trash className="h-3 w-3 mr-2" /> Delete
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently
+                          delete the expense record and its associated receipt.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDelete(expense.id)}
+                        >
+                          Continue
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </Card>
             </li>
           ))}
         </ul>

@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 type User = {
   id: string;
@@ -70,6 +72,13 @@ export default function AllocatePage() {
 
   return (
     <div className="p-4 max-w-md mx-auto">
+      <div className="mb-4">
+        <Link href="/funds/list">
+          <Button variant="outline" size="sm">
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
+          </Button>
+        </Link>
+      </div>
       <h1 className="text-xl font-bold mb-4">Allocate Funds</h1>
       <div className="space-y-4">
         <div>
