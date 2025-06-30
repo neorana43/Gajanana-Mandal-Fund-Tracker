@@ -1,18 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
+import { useRouter, useParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
 
-export default function AddSponsorPage() {
+export default function EditSponsorPage() {
   const supabase = createClient();
   const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
 
   const [sponsorName, setSponsorName] = useState("");
   const [amount, setAmount] = useState("");
@@ -20,46 +24,82 @@ export default function AddSponsorPage() {
   const [description, setDescription] = useState("");
   const [isFull, setIsFull] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
+
+  useEffect(() => {
+    const fetchSponsor = async () => {
+      if (!id) return;
+      setIsFetching(true);
+      const { data, error } = await supabase
+        .from("sponsors")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error || !data) {
+        toast.error("Failed to fetch sponsor details.");
+        router.push("/secret/list");
+      } else {
+        setSponsorName(data.sponsor_name);
+        setAmount(data.amount.toString());
+        setCategory(data.category);
+        setDescription(data.description || "");
+        setIsFull(data.is_full || false);
+      }
+      setIsFetching(false);
+    };
+
+    fetchSponsor();
+  }, [id, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!sponsorName || !amount) {
-      toast.error("Sponsor name and amount are required.");
+      toast.error("Please fill all required fields.");
       return;
     }
+
     setLoading(true);
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      toast.error("You must be logged in to create a sponsor record.");
-      setLoading(false);
-      return;
-    }
-
-    const { error } = await supabase.from("sponsors").insert({
-      sponsor_name: sponsorName,
-      amount: Number(amount),
-      category: category,
-      description: description,
-      is_full: isFull,
-      created_by: user.id,
-    });
+    const { error } = await supabase
+      .from("sponsors")
+      .update({
+        sponsor_name: sponsorName,
+        amount: Number(amount),
+        category,
+        description,
+        is_full: isFull,
+      })
+      .eq("id", id);
 
     setLoading(false);
 
     if (error) {
-      toast.error(`Failed to save sponsor: ${error.message}`);
+      toast.error("Failed to update sponsor.");
     } else {
-      toast.success("Sponsor added successfully!");
+      toast.success("Sponsor updated successfully!");
       router.push("/secret/list");
     }
   };
 
+  if (isFetching) {
+    return (
+      <div className="p-4 max-w-xl mx-auto">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 pb-24 max-w-xl mx-auto">
-      <h1 className="text-xl font-bold mb-4">Add Sponsor</h1>
+      <div className="flex items-center mb-4">
+        <Link href="/secret/list" className="mr-4">
+          <Button variant="outline" size="icon">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </Link>
+        <h1 className="text-xl font-bold">Edit Sponsor</h1>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -111,7 +151,7 @@ export default function AddSponsorPage() {
           </label>
         </div>
         <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Saving..." : "Add Sponsor"}
+          {loading ? "Saving..." : "Update Sponsor"}
         </Button>
       </form>
     </div>

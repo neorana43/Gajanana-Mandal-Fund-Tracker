@@ -1,17 +1,21 @@
 // lib/auth/getUserRole.ts
-import { createClient } from "../supabase";
+import { SupabaseClient } from "@supabase/supabase-js";
 
-export const getUserRole = async () => {
-  const supabase = createClient();
-  const { data: user } = await supabase.auth.getUser();
+export async function getUserRole(supabase: SupabaseClient) {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user;
 
-  if (!user.user) return null;
+  if (!user) {
+    return null;
+  }
 
-  const { data, error } = await supabase
+  const { data: roleData } = await supabase
     .from("user_roles")
     .select("role")
-    .eq("id", user.user.id)
+    .eq("id", user.id)
     .single();
 
-  return data?.role || null;
-};
+  return roleData?.role || null;
+}

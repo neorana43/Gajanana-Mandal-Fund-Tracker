@@ -47,7 +47,7 @@ const navItems = (role: string | null, isLoggedIn: boolean): NavItem[] => {
   ];
 
   if (role === "admin") {
-    baseItems.push({ href: "/secret", icon: Lock, label: "Secret" });
+    baseItems.push({ href: "/secret/list", icon: Lock, label: "Secret" });
   }
 
   baseItems.push({
