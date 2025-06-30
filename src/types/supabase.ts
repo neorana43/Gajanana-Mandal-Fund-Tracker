@@ -49,6 +49,7 @@ export type Database = {
           created_at: string | null;
           created_by: string | null;
           donor_name: string;
+          house_number: string | null;
           id: string;
           is_recurring: boolean | null;
         };
@@ -58,6 +59,7 @@ export type Database = {
           created_at?: string | null;
           created_by?: string | null;
           donor_name: string;
+          house_number?: string | null;
           id?: string;
           is_recurring?: boolean | null;
         };
@@ -67,6 +69,7 @@ export type Database = {
           created_at?: string | null;
           created_by?: string | null;
           donor_name?: string;
+          house_number?: string | null;
           id?: string;
           is_recurring?: boolean | null;
         };
