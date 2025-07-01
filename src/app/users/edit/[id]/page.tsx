@@ -148,12 +148,12 @@ export default function EditUserPage() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="user@example.com"
-                    required
+          <Input
+            type="email"
+            placeholder="user@example.com"
+            required
                     {...field}
-                  />
+          />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -179,28 +179,28 @@ export default function EditUserPage() {
               <FormItem>
                 <FormLabel>User Type</FormLabel>
                 <FormControl>
-                  <Select
+          <Select
                     value={field.value}
                     onValueChange={field.onChange}
                     required
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select user type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="volunteer">Volunteer</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select user type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="volunteer">Volunteer</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
+            </SelectContent>
+          </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={isPending} className="w-full">
-            {isPending ? "Saving..." : "Save Changes"}
-          </Button>
-        </form>
+        <Button type="submit" disabled={isPending} className="w-full">
+          {isPending ? "Saving..." : "Save Changes"}
+        </Button>
+      </form>
       </Form>
     </div>
   );

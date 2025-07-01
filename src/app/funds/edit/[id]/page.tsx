@@ -145,11 +145,11 @@ export default function EditAllocationPage() {
                       <SelectValue placeholder="Select a user" />
                     </SelectTrigger>
                     <SelectContent>
-                      {users.map((user) => (
+            {users.map((user) => (
                         <SelectItem key={user.id} value={user.id}>
-                          {user.displayName}
+                {user.displayName}
                         </SelectItem>
-                      ))}
+            ))}
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -170,10 +170,10 @@ export default function EditAllocationPage() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Saving..." : "Save Changes"}
-          </Button>
-        </form>
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? "Saving..." : "Save Changes"}
+        </Button>
+      </form>
       </Form>
     </div>
   );

@@ -148,7 +148,7 @@ export default function ExpenseForm() {
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-          {isAdmin && (
+        {isAdmin && (
             <FormField
               control={form.control}
               name="userId"
@@ -161,21 +161,21 @@ export default function ExpenseForm() {
                       onValueChange={field.onChange}
                       required
                     >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select user" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {users.map((u) => (
-                          <SelectItem key={u.id} value={u.id}>
-                            {u.displayName}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select user" />
+              </SelectTrigger>
+              <SelectContent>
+                {users.map((u) => (
+                  <SelectItem key={u.id} value={u.id}>
+                    {u.displayName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
-              )}
+        )}
             />
           )}
           <FormField
@@ -211,10 +211,10 @@ export default function ExpenseForm() {
               <FormItem>
                 <FormLabel>Note</FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder="Optional description or bill info"
+          <Textarea
+            placeholder="Optional description or bill info"
                     {...field}
-                  />
+          />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -227,10 +227,10 @@ export default function ExpenseForm() {
               <FormItem>
                 <FormLabel>Bill (Image or PDF)</FormLabel>
                 <FormControl>
-                  <Input
-                    type="file"
-                    accept="image/*,application/pdf"
-                    className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-foreground file:text-primary hover:file:bg-primary-foreground/90"
+          <Input
+            type="file"
+            accept="image/*,application/pdf"
+            className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-foreground file:text-primary hover:file:bg-primary-foreground/90"
                     onChange={(e) =>
                       field.onChange(e.target.files?.[0] || null)
                     }
@@ -240,10 +240,10 @@ export default function ExpenseForm() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Saving..." : "Submit Expense"}
-          </Button>
-        </form>
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? "Saving..." : "Submit Expense"}
+        </Button>
+      </form>
       </Form>
     </div>
   );

@@ -131,7 +131,7 @@
   }
 
   a {
-    @apply text-primary hover:underline transition-colors duration-200 font-medium;
+    @apply text-primary hover:no-underline transition-colors duration-200 font-medium;
     transition: color 0.2s;
   }
 

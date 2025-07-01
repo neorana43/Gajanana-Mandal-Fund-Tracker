@@ -3,8 +3,8 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
-import MainNav from "@/components/layouts/MainNav";
 import ThemeInitializer from "@/components/theme-initializer"; // ✅ Use client-safe hook
+import MainNavWrapper from "@/components/layouts/MainNavWrapper";
 
 export const metadata: Metadata = {
   title: "Gajanana Mandal Fund Tracker",
@@ -23,8 +23,10 @@ export default function RootLayout({
         className={`${GeistSans.variable} ${GeistMono.variable} font-sans bg-background text-foreground`}
       >
         <ThemeInitializer />
-        <MainNav />
-        <main className="pt-14 sm:pt-16">{children}</main>
+        <MainNavWrapper />
+        <main className="py-14 sm:py-16 min-h-screen flex flex-col">
+          {children}
+        </main>
         <Toaster position="top-center" richColors />
       </body>
     </html>
