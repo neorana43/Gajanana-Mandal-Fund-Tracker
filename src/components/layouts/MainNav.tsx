@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { createClient } from "@/lib/supabase";
 import {
   Home,
@@ -70,6 +70,8 @@ export default function MainNav() {
   const [role, setRole] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [navShrink, setNavShrink] = useState(false);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -92,6 +94,19 @@ export default function MainNav() {
     fetchUser();
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY.current && window.scrollY > 32) {
+        setNavShrink(true);
+      } else {
+        setNavShrink(false);
+      }
+      lastScrollY.current = window.scrollY;
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/login");
@@ -99,8 +114,18 @@ export default function MainNav() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-gray-900 border-none shadow-xl h-16 flex items-center px-0 md:px-12 rounded-3xl mt-2 md:mx-2">
-        <ul className="relative flex justify-between items-center px-4 py-2 w-full">
+      <nav
+        className={cn(
+          "glass fixed bottom-4 left-1/2 -translate-x-1/2 z-40 flex items-center px-2 md:px-12 rounded-2xl shadow-2xl transition-all duration-300",
+          "w-[95vw] max-w-2xl",
+          navShrink
+            ? "h-12 py-1 scale-95 opacity-90"
+            : "h-16 py-2 scale-100 opacity-100",
+        )}
+        aria-label="Bottom Navigation Bar"
+        role="navigation"
+      >
+        <ul className="relative flex justify-between items-center px-2 py-0 w-full">
           {navItems(role, isLoggedIn).map((item) => {
             const isActive = pathname.startsWith(item.href);
 
@@ -170,7 +195,7 @@ export default function MainNav() {
       {/* Menu drawer */}
       {showMenu && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex justify-center items-end sm:items-center sm:justify-center">
-          <div className="bg-white dark:bg-background rounded-t-xl sm:rounded-xl w-full sm:max-w-sm p-4">
+          <div className="glass w-full sm:max-w-sm p-4 rounded-t-xl sm:rounded-xl">
             <h2 className="text-lg font-semibold mb-2">Quick Menu</h2>
             <ul className="space-y-2">
               <li>

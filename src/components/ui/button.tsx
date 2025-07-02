@@ -10,16 +10,18 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-4 focus-visible:ring-primary/30",
+          "glass bg-white/40 dark:bg-gray-800/40 text-black dark:text-white hover:bg-white/60 dark:hover:bg-gray-800/60 focus-visible:ring-4 focus-visible:ring-primary/30 focus-visible:shadow-2xl active:bg-white/70 dark:active:bg-gray-800/70 active:shadow-xl",
         destructive:
-          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-4 focus-visible:ring-destructive/30 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-4 focus-visible:ring-destructive/30 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60 focus-visible:shadow-2xl active:shadow-xl",
         outline:
-          "border-2 border-primary bg-white text-primary hover:bg-primary/5 focus-visible:ring-4 focus-visible:ring-primary/30 dark:bg-input/30 dark:border-primary dark:hover:bg-input/50",
+          "glass border-2 border-primary bg-white/30 dark:bg-gray-800/30 text-black dark:text-white hover:bg-primary/5 focus-visible:ring-4 focus-visible:ring-primary/30 dark:hover:bg-input/50 focus-visible:shadow-2xl active:shadow-xl",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 focus-visible:ring-4 focus-visible:ring-secondary/30",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 focus-visible:ring-4 focus-visible:ring-secondary/30 focus-visible:shadow-2xl active:shadow-xl",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-accent/20 dark:hover:bg-accent/50",
+          "hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-accent/20 dark:hover:bg-accent/50 focus-visible:shadow-2xl active:shadow-xl",
         link: "text-primary underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-primary/20",
+        glass:
+          "glass bg-secondary/10 px-8 py-3 text-lg rounded-full shadow-xl transition-all duration-200 disabled:opacity-50 hover:shadow-2xl active:shadow-xl focus-visible:ring-4 focus-visible:ring-primary/30 focus-visible:shadow-2xl",
       },
       size: {
         default: "h-12 px-8 py-3 has-[>svg]:px-6 text-lg",

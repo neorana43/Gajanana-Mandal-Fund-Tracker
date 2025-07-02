@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/form";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { Card } from "@/components/ui/card";
 
 export default function DonatePage() {
   const supabase = createClient();
@@ -77,98 +78,108 @@ export default function DonatePage() {
 
   return (
     <div className="p-4 max-w-2xl w-full mx-auto">
-      <div className="flex items-center mb-4">
-        <Link href="/donate/list">
-          <Button variant="outline" size="icon">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
-        <h1 className="text-xl font-bold ml-4">Make a Donation</h1>
-      </div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-          <FormField
-            control={form.control}
-            name="donorName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Your Name" required {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="houseNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>House Number (Optional)</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="amount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Amount</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="Enter amount"
-                    required
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="contact"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contact Information (Optional)</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Any additional contact information"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="isRecurring"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Recurring Donation</FormLabel>
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    id="isRecurring"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" disabled={loading} className="w-full">
-            {loading ? "Submitting..." : "Submit Donation"}
-          </Button>
-        </form>
-      </Form>
+      <Card className="w-full p-8">
+        <div className="flex items-center mb-4">
+          <Link href="/donate/list">
+            <Button variant="glass" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <h1 className="text-xl font-bold ml-4">Make a Donation</h1>
+        </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+            <FormField
+              control={form.control}
+              name="donorName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Your Name" required {...field} glass />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="houseNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>House Number (Optional)</FormLabel>
+                  <FormControl>
+                    <Input {...field} glass />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="amount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Amount</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter amount"
+                      required
+                      {...field}
+                      glass
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="contact"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Contact Information (Optional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Any additional contact information"
+                      {...field}
+                      glass
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="isRecurring"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Recurring Donation</FormLabel>
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      id="isRecurring"
+                      glass
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              disabled={loading}
+              variant="glass"
+              className="w-full"
+            >
+              {loading ? "Submitting..." : "Submit Donation"}
+            </Button>
+          </form>
+        </Form>
+      </Card>
     </div>
   );
 }

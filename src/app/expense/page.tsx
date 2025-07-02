@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/form";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 type ExpenseFormData = {
   userId: string;
@@ -138,113 +139,121 @@ export default function ExpenseForm() {
 
   return (
     <div className="p-4 pb-24 max-w-2xl w-full mx-auto">
-      <div className="flex items-center mb-4">
-        <Link href="/expense/list">
-          <Button variant="outline" size="icon">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
-        <h1 className="text-xl font-bold ml-4">Add Expense</h1>
-      </div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-          {isAdmin && (
+      <Card className="w-full p-8">
+        <div className="flex items-center mb-4">
+          <Link href="/expense/list">
+            <Button variant="glass" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <h1 className="text-xl font-bold ml-4">Add Expense</h1>
+        </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+            {isAdmin && (
+              <FormField
+                control={form.control}
+                name="userId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>User</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        required
+                      >
+                        <SelectTrigger glass>
+                          <SelectValue placeholder="Select user" />
+                        </SelectTrigger>
+                        <SelectContent glass>
+                          {users.map((u) => (
+                            <SelectItem key={u.id} value={u.id}>
+                              {u.displayName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <FormField
               control={form.control}
-              name="userId"
+              name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>User</FormLabel>
+                  <FormLabel>Amount</FormLabel>
                   <FormControl>
-                    <Select
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      required
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select user" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {users.map((u) => (
-                          <SelectItem key={u.id} value={u.id}>
-                            {u.displayName}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Input type="number" required {...field} glass />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          )}
-          <FormField
-            control={form.control}
-            name="amount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Amount</FormLabel>
-                <FormControl>
-                  <Input type="number" required {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="category"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Category</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="note"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Note</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Optional description or bill info"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Controller
-            control={form.control}
-            name="billFile"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Bill (Image or PDF)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="file"
-                    accept="image/*,application/pdf"
-                    className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-foreground file:text-primary hover:file:bg-primary-foreground/90"
-                    onChange={(e) =>
-                      field.onChange(e.target.files?.[0] || null)
-                    }
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Saving..." : "Submit Expense"}
-          </Button>
-        </form>
-      </Form>
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <FormControl>
+                    <Input {...field} glass />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="note"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Note</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Optional description or bill info"
+                      {...field}
+                      glass
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Controller
+              control={form.control}
+              name="billFile"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Bill (Image or PDF)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      accept="image/*,application/pdf"
+                      onChange={(e) =>
+                        field.onChange(e.target.files?.[0] || null)
+                      }
+                      glass
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              variant="glass"
+              className="w-full mt-5"
+              disabled={loading}
+            >
+              {loading ? "Saving..." : "Submit Expense"}
+            </Button>
+          </form>
+        </Form>
+      </Card>
     </div>
   );
 }

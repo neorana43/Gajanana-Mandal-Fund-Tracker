@@ -22,6 +22,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 type Expense = Tables<"expenses">;
 
@@ -104,12 +105,12 @@ export default function ExpenseListPage() {
       </div>
 
       {/* Filter Input */}
-      <input
+      <Input
         type="text"
         placeholder="Filter by category or description..."
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
-        className="w-full border p-2 rounded-md text-sm mb-4"
+        className="mb-4"
       />
 
       {/* List */}

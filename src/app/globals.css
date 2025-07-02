@@ -124,7 +124,7 @@
 @layer base {
   html,
   body {
-    @apply min-h-screen bg-background text-foreground antialiased font-sans scroll-smooth text-base;
+    @apply min-h-screen bg-gradient-to-br from-blue-100 via-white to-purple-100 text-foreground antialiased font-sans scroll-smooth text-base;
     font-family: "Inter", system-ui, sans-serif;
     letter-spacing: 0.01em;
     transition: background 0.3s, color 0.3s;
@@ -156,5 +156,27 @@
   }
   ::-webkit-scrollbar-track {
     @apply bg-muted;
+  }
+
+  /* Glassmorphism utility for Liquid Glass UI */
+  .glass {
+    @apply backdrop-blur-lg backdrop-saturate-150 bg-white/60 dark:bg-gray-800/40 border border-white/40 dark:border-black/30 rounded-2xl shadow-2xl transition-all duration-300;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    background-color: #fff !important; /* fallback for accessibility */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    opacity: 1 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
   }
 }

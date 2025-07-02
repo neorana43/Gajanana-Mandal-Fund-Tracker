@@ -2,12 +2,17 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+function Card({
+  className,
+  solid = false,
+  ...props
+}: React.ComponentProps<"div"> & { solid?: boolean }) {
   return (
     <div
       data-slot="card"
       className={cn(
-        "bg-white dark:bg-gray-800 text-card-foreground flex flex-col gap-8 rounded-3xl border-none py-8 px-6 shadow-xl transition-all duration-200 hover:shadow-2xl hover:-translate-y-1 active:scale-[0.98]",
+        solid ? "bg-card" : "glass",
+        "flex flex-col gap-8 py-8 px-6 transition-all duration-200 shadow-xl hover:shadow-2xl ",
         className,
       )}
       {...props}

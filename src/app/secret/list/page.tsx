@@ -20,6 +20,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 type Sponsor = Tables<"sponsors">;
 
@@ -82,12 +83,12 @@ export default function SponsorListPage() {
         </Link>
       </div>
 
-      <input
+      <Input
         type="text"
         placeholder="Filter by name or category..."
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
-        className="w-full border p-2 rounded-md text-sm mb-4"
+        className="mb-4"
       />
 
       {filteredSponsors.length === 0 ? (

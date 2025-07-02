@@ -27,18 +27,19 @@ export default function RootLayout({
         className={`${GeistSans.variable} ${GeistMono.variable} font-sans bg-background text-foreground`}
       >
         <ThemeInitializer />
-        <div className="w-full flex justify-center items-center py-4">
-          <Link href="/">
-            <img
-              src="/logo.svg"
-              alt="App Logo"
-              height={70}
-              className="h-20 w-auto"
-            />
-          </Link>
-        </div>
+
         <MainNavWrapper />
         <main className="py-14 sm:py-16 min-h-screen flex flex-col">
+          <div className="w-full flex justify-center items-center py-4">
+            <Link href="/">
+              <img
+                src="/logo.svg"
+                alt="App Logo"
+                height={70}
+                className="h-20 w-auto"
+              />
+            </Link>
+          </div>
           {children}
         </main>
         <Toaster position="top-center" richColors />

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function FloatingButtons() {
   const [open, setOpen] = useState(false);
@@ -10,24 +11,33 @@ export default function FloatingButtons() {
     <div className="fixed bottom-4 right-4 z-50">
       {open && (
         <div className="space-y-2 mb-2 text-sm text-white text-right">
-          <Link href="/donate">
-            <div className="bg-pink-600 px-3 py-2 rounded shadow hover:bg-pink-700">
+          <Link href="/donate" passHref>
+            <Button
+              asChild
+              variant="glass"
+              className="bg-pink-600 hover:bg-pink-700 text-white w-full"
+            >
               + Donation
-            </div>
+            </Button>
           </Link>
-          <Link href="/expense">
-            <div className="bg-blue-600 px-3 py-2 rounded shadow hover:bg-blue-700">
+          <Link href="/expense" passHref>
+            <Button
+              asChild
+              variant="glass"
+              className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+            >
               + Expense
-            </div>
+            </Button>
           </Link>
         </div>
       )}
-      <button
+      <Button
         onClick={() => setOpen(!open)}
+        variant="glass"
         className="bg-saffron text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center text-2xl hover:bg-saffron/90"
       >
-        {open ? "×" : "+"}
-      </button>
+        {open ? "\u00d7" : "+"}
+      </Button>
     </div>
   );
 }

@@ -9,6 +9,13 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 
 type User = {
   id: string;
@@ -85,21 +92,18 @@ export default function AllocatePage() {
           <Label htmlFor="user" className="mb-1.5 block">
             Select User
           </Label>
-          <select
-            id="user"
-            value={selectedUser}
-            onChange={(e) => setSelectedUser(e.target.value)}
-            className="w-full p-2 border rounded"
-          >
-            <option value="" disabled>
-              Select a user
-            </option>
-            {users.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.displayName}
-              </option>
-            ))}
-          </select>
+          <Select value={selectedUser} onValueChange={setSelectedUser}>
+            <SelectTrigger className="w-full h-12 text-left">
+              <SelectValue placeholder="Select a user" />
+            </SelectTrigger>
+            <SelectContent>
+              {users.map((user) => (
+                <SelectItem key={user.id} value={user.id}>
+                  {user.displayName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div>

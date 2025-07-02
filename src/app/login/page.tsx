@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { Card } from "@/components/ui/card";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -40,7 +41,7 @@ export default function LoginPage() {
 
   return (
     <div className="h-full flex items-center justify-center p-6 my-auto max-w-2xl w-full mx-auto">
-      <div className="w-full space-y-6">
+      <Card className="w-full space-y-6 p-8">
         <div className="text-center">
           <h1 className="text-2xl font-bold">Login</h1>
           <p className="text-sm text-muted-foreground">
@@ -59,7 +60,7 @@ export default function LoginPage() {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="rounded-md px-4 py-2 bg-inherit border mb-6"
+              glass
             />
           </div>
 
@@ -73,15 +74,15 @@ export default function LoginPage() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="rounded-md px-4 py-2 bg-inherit border mb-6"
+              glass
             />
           </div>
 
-          <Button onClick={handleLogin} disabled={loading} className="w-full">
+          <Button onClick={handleLogin} disabled={loading} variant="glass">
             {loading ? "Logging in..." : "Login"}
           </Button>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }
