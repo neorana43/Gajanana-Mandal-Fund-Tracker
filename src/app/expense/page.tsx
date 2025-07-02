@@ -93,7 +93,7 @@ export default function ExpenseForm() {
     };
 
     init();
-  }, []);
+  }, [form, supabase]);
 
   const onSubmit = async (data: ExpenseFormData) => {
     if (!data.userId || !data.amount) {

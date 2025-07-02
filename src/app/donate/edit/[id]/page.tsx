@@ -73,7 +73,7 @@ export default function EditDonationPage() {
     };
 
     fetchDonation();
-  }, [id, router]);
+  }, [form, supabase]);
 
   const onSubmit = async (data: EditDonationFormData) => {
     if (!data.donorName || !data.amount) {

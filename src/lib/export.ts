@@ -1,7 +1,10 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
-export const exportToCSV = (data: any[], filename: string) => {
+export const exportToCSV = (
+  data: Record<string, unknown>[],
+  filename: string,
+) => {
   const csvContent =
     "data:text/csv;charset=utf-8," +
     [

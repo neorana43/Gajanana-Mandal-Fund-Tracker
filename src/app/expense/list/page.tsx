@@ -48,7 +48,7 @@ export default function ExpenseListPage() {
     };
 
     fetchExpenses();
-  }, []);
+  }, [supabase]);
 
   const handleDelete = async (expenseId: string) => {
     // Find the expense to get the bill URL for deletion from storage

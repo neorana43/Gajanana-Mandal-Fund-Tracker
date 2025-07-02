@@ -45,7 +45,7 @@ export default function SponsorListPage() {
     };
 
     fetchSponsors();
-  }, []);
+  }, [supabase]);
 
   const handleDelete = async (sponsorId: string) => {
     const { data, error } = await supabase

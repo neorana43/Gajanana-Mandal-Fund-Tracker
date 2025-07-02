@@ -52,7 +52,7 @@ export default function AllocationListPage() {
     };
 
     fetchAllocations();
-  }, []);
+  }, [supabase]);
 
   const handleDelete = async (allocationId: string) => {
     const { error } = await supabase

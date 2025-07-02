@@ -46,7 +46,7 @@ export default function DonationListPage() {
     };
 
     fetchDonations();
-  }, []);
+  }, [supabase]);
 
   const handleDelete = async (donationId: string) => {
     const { data, error } = await supabase

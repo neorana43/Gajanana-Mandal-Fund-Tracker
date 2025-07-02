@@ -66,7 +66,7 @@ export default function EditSponsorPage() {
     };
 
     fetchSponsor();
-  }, [id, router]);
+  }, [form, supabase]);
 
   const onSubmit = async (data: Record<string, string | boolean>) => {
     if (!data.sponsorName || !data.amount) {

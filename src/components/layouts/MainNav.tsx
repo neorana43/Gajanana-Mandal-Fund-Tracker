@@ -92,7 +92,7 @@ export default function MainNav() {
       }
     };
     fetchUser();
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
     const handleScroll = () => {

@@ -4,7 +4,6 @@ import { z } from "zod";
 
 const userSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
   displayName: z.string().min(2, "Display name must be at least 2 characters."),
   phone: z.string().optional(),
   userType: z.enum(["admin", "volunteer"], {
@@ -24,18 +23,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: message }, { status: 400 });
     }
 
-    const { email, password, displayName, phone, userType } = parsed.data;
+    const { email, displayName, phone, userType } = parsed.data;
 
-    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+    // Send invite email so user can set their own password
+    const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(
       email,
-      password,
-      email_confirm: true,
-      user_metadata: {
-        display_name: displayName,
-        phone: phone,
-        user_type: userType,
+      {
+        data: {
+          display_name: displayName,
+          phone: phone,
+          user_type: userType,
+        },
+        // Optionally: redirectTo: "https://your-app.com/login"
       },
-    });
+    );
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });

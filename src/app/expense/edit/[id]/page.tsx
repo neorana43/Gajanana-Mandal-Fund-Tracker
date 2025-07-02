@@ -81,7 +81,7 @@ export default function EditExpensePage() {
     };
 
     fetchExpense();
-  }, [id, router]);
+  }, [id, router, form, supabase]);
 
   const onSubmit = async (data: EditExpenseFormData) => {
     if (!data.amount) {
