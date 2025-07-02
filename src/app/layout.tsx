@@ -6,6 +6,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import ThemeInitializer from "@/components/theme-initializer"; // ✅ Use client-safe hook
 import MainNavWrapper from "@/components/layouts/MainNavWrapper";
+import Header from "@/components/layouts/Header";
 
 export const metadata: Metadata = {
   title: "Gajanana Mandal Fund Tracker",
@@ -31,19 +32,9 @@ export default function RootLayout({
         className={`${GeistSans.variable} ${GeistMono.variable} font-sans bg-background text-foreground`}
       >
         <ThemeInitializer />
-
+        <Header />
         <MainNavWrapper />
-        <main className="py-14 sm:py-16 min-h-screen flex flex-col">
-          <div className="w-full flex justify-center items-center py-4">
-            <Link href="/">
-              <img
-                src="/logo.svg"
-                alt="App Logo"
-                height={70}
-                className="h-20 w-auto"
-              />
-            </Link>
-          </div>
+        <main className="pt-20 sm:pt-24 min-h-screen flex flex-col">
           {children}
         </main>
         <Toaster position="top-center" richColors />

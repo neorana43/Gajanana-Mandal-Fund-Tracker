@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { createClient } from "@/lib/supabase";
 import {
@@ -11,7 +11,6 @@ import {
   Lock,
   Menu,
   LogIn,
-  LogOut,
   LucideProps,
   Landmark,
 } from "lucide-react";
@@ -65,8 +64,6 @@ const navItems = (role: string | null, isLoggedIn: boolean): NavItem[] => {
 export default function MainNav() {
   const pathname = usePathname();
   const supabase = createClient();
-  const router = useRouter();
-
   const [role, setRole] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -106,11 +103,6 @@ export default function MainNav() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
-  };
 
   return (
     <>
@@ -176,19 +168,6 @@ export default function MainNav() {
               </li>
             );
           })}
-
-          {isLoggedIn && (
-            <li className="flex-1 text-center flex justify-center items-center">
-              <Button
-                onClick={handleLogout}
-                variant={"ghost"}
-                className="relative flex h-fit flex-col gap-0 py-0 !px-0 min-w-fit shadow-none items-center hover:bg-transparent cursor-pointer text-xs font-medium transition-all duration-200 ease-in-out hover:no-underline hover:text-primary hover:font-semibold transform-none active:scale-100 hover:scale-100 hover:-translate-y-0 active:-translate-y-0"
-              >
-                <LogOut className="h-5 w-5 mb-1 transition-transform duration-200" />
-                Logout
-              </Button>
-            </li>
-          )}
         </ul>
       </nav>
 
