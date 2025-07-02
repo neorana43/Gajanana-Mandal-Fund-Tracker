@@ -249,11 +249,6 @@ export default async function PublicDashboard() {
 
   return (
     <div className="p-4 pb-24 max-w-4xl w-full mx-auto">
-      {isAdmin && (
-        <div className="flex justify-end mb-4">
-          <ShareDashboardButton />
-        </div>
-      )}
       <h1 className="text-xl font-bold mb-4">Dashboard</h1>
       <DashboardTabs tabs={tabs} />
     </div>
