@@ -72,6 +72,24 @@ export default function ListUsersPage() {
     });
   };
 
+  if (loading) {
+    return (
+      <div className="p-4 pb-24 max-w-2xl w-full mx-auto">
+        <Card className="w-full p-8 flex flex-col items-center justify-center min-h-[300px]">
+          <div className="w-16 h-16 mb-4">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-accent" />
+          </div>
+          <div className="w-2/3 h-6 mb-2">
+            <div className="bg-accent/40 animate-pulse rounded-full w-full h-full" />
+          </div>
+          <div className="w-1/2 h-4">
+            <div className="bg-accent/30 animate-pulse rounded-full w-full h-full" />
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 pb-24 max-w-2xl w-full mx-auto">
       <div className="flex justify-between items-center mb-4">
@@ -83,9 +101,7 @@ export default function ListUsersPage() {
         </Link>
       </div>
 
-      {loading ? (
-        <p className="text-sm text-muted-foreground">Loading users...</p>
-      ) : users.length === 0 ? (
+      {users.length === 0 ? (
         <p className="text-sm text-muted-foreground">No users found.</p>
       ) : (
         <ul className="space-y-4 text-sm">

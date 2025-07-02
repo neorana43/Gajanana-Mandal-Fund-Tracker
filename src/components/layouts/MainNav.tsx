@@ -119,7 +119,10 @@ export default function MainNav() {
       >
         <ul className="relative flex justify-between items-center px-2 py-0 w-full">
           {navItems(role, isLoggedIn).map((item) => {
-            const isActive = pathname.startsWith(item.href);
+            let isActive = pathname.startsWith(item.href);
+            if (item.href === "/dashboard" && pathname === "/dashboard/user") {
+              isActive = false;
+            }
 
             if (item.type === "menu") {
               return (

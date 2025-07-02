@@ -6,6 +6,8 @@ import UserAllocationChart from "@/components/charts/UserAllocationChart";
 import DashboardTabs from "@/components/layouts/DashboardTabs";
 import { Tables } from "@/types/supabase";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 type Sponsor = Tables<"sponsors">;
 type Allocation = {
@@ -247,7 +249,24 @@ export default async function PublicDashboard() {
   }
 
   return (
-    <div className="p-4 pb-24 max-w-2xl  mx-auto w-full">
+    <div className="p-4 pb-24 max-w-4xl w-full mx-auto">
+      {isAdmin && (
+        <div className="flex justify-end mb-4">
+          <form
+            action="#"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const url = `${window.location.origin}/dashboard/public`;
+              navigator.clipboard.writeText(url);
+              toast.success("Public dashboard URL copied!");
+            }}
+          >
+            <Button type="submit" variant="glass">
+              Share Public Dashboard URL
+            </Button>
+          </form>
+        </div>
+      )}
       <h1 className="text-xl font-bold mb-4">Dashboard</h1>
       <DashboardTabs tabs={tabs} />
     </div>
