@@ -60,7 +60,7 @@ export function ShareDashboardButton() {
         <Button
           type="submit"
           variant="glass"
-          className="text-xs flex items-center gap-2"
+          className="text-xs flex items-center gap-2 w-full"
         >
           <Share2 className="w-4 h-4" />
           Share Public Dashboard
