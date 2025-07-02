@@ -77,7 +77,7 @@ export default function DonatePage() {
   };
 
   return (
-    <div className="p-4 max-w-2xl w-full mx-auto">
+    <div className="p-4 pb-24 max-w-2xl w-full mx-auto">
       <Card className="w-full p-8">
         <div className="flex items-center mb-4">
           <Link href="/donate/list">
