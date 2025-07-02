@@ -108,7 +108,7 @@ export default function MainNav() {
     <>
       <nav
         className={cn(
-          "glass fixed bottom-4 left-1/2 -translate-x-1/2 z-40 flex items-center px-2 md:px-12 rounded-2xl shadow-2xl transition-all duration-300",
+          "glass fixed bottom-4 left-1/2 -translate-x-1/2 z-40 flex items-center px-1 lg:px-12 rounded-2xl shadow-2xl transition-all duration-300",
           "w-[95vw] max-w-2xl",
           navShrink
             ? "h-12 py-1 scale-95 opacity-90"
