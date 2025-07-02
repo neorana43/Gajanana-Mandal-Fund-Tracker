@@ -17,9 +17,10 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { Link } from "next/navigation";
+
 import { ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import Link from "next/link";
 
 export default function AddSponsorPage() {
   const supabase = createClient();
