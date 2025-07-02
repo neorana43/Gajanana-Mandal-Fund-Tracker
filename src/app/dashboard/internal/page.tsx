@@ -21,7 +21,7 @@ export default async function InternalDashboard() {
     users.find((u) => u.id === id)?.full_name || "Unknown";
 
   return (
-    <div className="p-4 pb-24 max-w-3xl mx-auto">
+    <div className="p-4 pb-24 max-w-3xl mx-auto w-full">
       <h1 className="text-xl font-bold mb-4">Internal Dashboard</h1>
 
       <DashboardTabs

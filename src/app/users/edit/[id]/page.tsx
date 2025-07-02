@@ -106,7 +106,7 @@ export default function EditUserPage() {
 
   if (loading) {
     return (
-      <div className="p-4 max-w-xl mx-auto">
+      <div className="p-4 max-w-2xl w-full mx-auto">
         <p>Loading user data...</p>
       </div>
     );
@@ -117,7 +117,7 @@ export default function EditUserPage() {
   }
 
   return (
-    <div className="p-4 pb-24 max-w-xl mx-auto">
+    <div className="p-4 pb-24 max-w-2xl w-full mx-auto">
       <div className="flex items-center mb-4">
         <Link href="/users/list">
           <Button variant="outline" size="icon">
@@ -148,12 +148,12 @@ export default function EditUserPage() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-          <Input
-            type="email"
-            placeholder="user@example.com"
-            required
+                  <Input
+                    type="email"
+                    placeholder="user@example.com"
+                    required
                     {...field}
-          />
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -179,28 +179,28 @@ export default function EditUserPage() {
               <FormItem>
                 <FormLabel>User Type</FormLabel>
                 <FormControl>
-          <Select
+                  <Select
                     value={field.value}
                     onValueChange={field.onChange}
                     required
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select user type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="volunteer">Volunteer</SelectItem>
-              <SelectItem value="admin">Admin</SelectItem>
-            </SelectContent>
-          </Select>
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select user type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="volunteer">Volunteer</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-        <Button type="submit" disabled={isPending} className="w-full">
-          {isPending ? "Saving..." : "Save Changes"}
-        </Button>
-      </form>
+          <Button type="submit" disabled={isPending} className="w-full">
+            {isPending ? "Saving..." : "Save Changes"}
+          </Button>
+        </form>
       </Form>
     </div>
   );

@@ -70,7 +70,7 @@ export default function AllocationAuditPage() {
   });
 
   return (
-    <div className="p-4">
+    <div className="p-4 max-w-2xl w-full mx-auto">
       <h1 className="text-xl font-bold mb-4">Fund Allocation Audit</h1>
 
       {/* Filters */}

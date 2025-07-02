@@ -67,7 +67,7 @@ export default function AddSponsorPage() {
   };
 
   return (
-    <div className="p-4 pb-24 max-w-xl mx-auto">
+    <div className="p-4 pb-24 max-w-2xl w-full mx-auto">
       <div className="flex items-center mb-4">
         <Link href="/secret/list">
           <Button variant="outline" size="icon">

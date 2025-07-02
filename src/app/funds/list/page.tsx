@@ -70,14 +70,14 @@ export default function AllocationListPage() {
 
   if (loading) {
     return (
-      <div className="p-4 max-w-xl mx-auto text-center">
+      <div className="p-4 max-w-2xl w-full mx-auto text-center">
         <p>Loading allocations...</p>
       </div>
     );
   }
 
   return (
-    <div className="p-4 pb-24 max-w-xl mx-auto">
+    <div className="p-4 pb-24 max-w-2xl w-full mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">Fund Allocations</h1>
         <Link href="/funds/allocate">

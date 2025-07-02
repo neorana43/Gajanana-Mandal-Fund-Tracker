@@ -71,7 +71,7 @@ export default function AllocatePage() {
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto">
+    <div className="p-4 max-w-2xl w-full mx-auto">
       <div className="flex items-center mb-4">
         <Link href="/funds/list">
           <Button variant="outline" size="icon">

@@ -65,7 +65,7 @@ export default async function PublicDashboard() {
     });
 
     return (
-      <div className="p-6 max-w-xl mx-auto text-center text-red-600">
+      <div className="p-6 max-w-2xl w-full mx-auto text-center text-red-600">
         <p className="text-lg font-semibold">Failed to load dashboard data.</p>
         <p className="text-sm mt-2">Please try again later.</p>
       </div>
@@ -97,7 +97,7 @@ export default async function PublicDashboard() {
 
   if (!hasData) {
     return (
-      <div className="p-6 max-w-xl mx-auto text-center text-muted-foreground">
+      <div className="p-6 max-w-2xl w-full mx-auto text-center text-muted-foreground">
         <p className="text-lg font-medium">No data available yet.</p>
         <p className="text-sm mt-1">
           Start by adding donations or expenses to see the dashboard.
@@ -264,7 +264,7 @@ export default async function PublicDashboard() {
   }
 
   return (
-    <div className="p-4 pb-24 max-w-xl mx-auto">
+    <div className="p-4 pb-24 max-w-2xl w-full mx-auto w-full">
       <h1 className="text-xl font-bold mb-4">Dashboard</h1>
       <DashboardTabs tabs={tabs} />
     </div>

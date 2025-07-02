@@ -36,7 +36,7 @@ export default async function PublicDashboardPage() {
 
   if (donationRes.error || expenseRes.error) {
     return (
-      <div className="p-6 max-w-xl mx-auto text-center text-red-600">
+      <div className="p-6 max-w-2xl w-full mx-auto text-center text-red-600">
         <p className="text-lg font-semibold">Failed to load dashboard data.</p>
         <p className="text-sm mt-2">Please try again later.</p>
       </div>
@@ -165,7 +165,7 @@ export default async function PublicDashboardPage() {
   ];
 
   return (
-    <div className="p-8 max-w-2xl mx-auto text-center">
+    <div className="p-8 max-w-2xl mx-auto text-center w-full">
       <h1 className="text-3xl font-bold mb-4">Gajanana Mandal Fund Tracker</h1>
       <p className="text-muted-foreground mb-8">
         Below are the latest stats for donations and expenses.

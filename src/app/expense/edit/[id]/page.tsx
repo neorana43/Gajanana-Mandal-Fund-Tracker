@@ -155,14 +155,14 @@ export default function EditExpensePage() {
 
   if (isFetching) {
     return (
-      <div className="p-4 max-w-xl mx-auto">
+      <div className="p-4 max-w-2xl w-full mx-auto">
         <p>Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="p-4 pb-24 max-w-xl mx-auto">
+    <div className="p-4 pb-24 max-w-2xl w-full mx-auto">
       <div className="flex items-center mb-4">
         <Link href="/expense/list">
           <Button variant="outline" size="icon">

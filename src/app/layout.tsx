@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { GeistSans } from "geist/font/sans";
@@ -10,6 +11,9 @@ export const metadata: Metadata = {
   title: "Gajanana Mandal Fund Tracker",
   description:
     "Track donations, expenses, sponsors, and more for Ganesh Mandal.",
+  icons: {
+    icon: "/fevicon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -23,6 +27,16 @@ export default function RootLayout({
         className={`${GeistSans.variable} ${GeistMono.variable} font-sans bg-background text-foreground`}
       >
         <ThemeInitializer />
+        <div className="w-full flex justify-center items-center py-4">
+          <Link href="/">
+            <img
+              src="/logo.svg"
+              alt="App Logo"
+              height={70}
+              className="h-20 w-auto"
+            />
+          </Link>
+        </div>
         <MainNavWrapper />
         <main className="py-14 sm:py-16 min-h-screen flex flex-col">
           {children}

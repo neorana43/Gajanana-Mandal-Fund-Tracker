@@ -111,14 +111,14 @@ export default function EditAllocationPage() {
 
   if (loading) {
     return (
-      <div className="p-4 max-w-md mx-auto text-center">
+      <div className="p-4 max-w-2xl w-full mx-auto text-center">
         <p>Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="p-4 max-w-md mx-auto">
+    <div className="p-4 max-w-2xl w-full mx-auto">
       <div className="flex items-center mb-4">
         <Link href="/funds/list">
           <Button variant="outline" size="icon">
@@ -145,11 +145,11 @@ export default function EditAllocationPage() {
                       <SelectValue placeholder="Select a user" />
                     </SelectTrigger>
                     <SelectContent>
-            {users.map((user) => (
+                      {users.map((user) => (
                         <SelectItem key={user.id} value={user.id}>
-                {user.displayName}
+                          {user.displayName}
                         </SelectItem>
-            ))}
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -170,10 +170,10 @@ export default function EditAllocationPage() {
               </FormItem>
             )}
           />
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Saving..." : "Save Changes"}
-        </Button>
-      </form>
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Saving..." : "Save Changes"}
+          </Button>
+        </form>
       </Form>
     </div>
   );

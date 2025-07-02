@@ -46,7 +46,7 @@ export default async function UserDashboard() {
   const remaining = allocated - spent;
 
   return (
-    <div className="p-4 pb-24 max-w-xl mx-auto">
+    <div className="p-4 pb-24 max-w-2xl w-full mx-auto w-full">
       <h1 className="text-xl font-bold mb-4">Your Dashboard</h1>
 
       <DashboardTabs

@@ -72,7 +72,7 @@ export default function SponsorListPage() {
   );
 
   return (
-    <div className="p-4 pb-24 max-w-xl mx-auto">
+    <div className="p-4 pb-24 max-w-2xl w-full mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">Sponsors</h1>
         <Link href="/secret">
