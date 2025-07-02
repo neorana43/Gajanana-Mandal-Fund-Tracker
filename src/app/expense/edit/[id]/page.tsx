@@ -21,6 +21,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
+import { Card } from "@/components/ui/card";
 
 type Expense = Tables<"expenses">;
 
@@ -163,132 +164,139 @@ export default function EditExpensePage() {
 
   return (
     <div className="p-4 pb-24 max-w-2xl w-full mx-auto">
-      <div className="flex items-center mb-4">
-        <Link href="/expense/list">
-          <Button variant="outline" size="icon">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
-        <h1 className="text-xl font-bold ml-4">Edit Expense</h1>
-      </div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-          <FormField
-            control={form.control}
-            name="amount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Amount</FormLabel>
-                <FormControl>
-                  <Input type="number" required {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="date"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Date</FormLabel>
-                <FormControl>
-                  <Input type="date" required {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="category"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Category</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="note"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Note</FormLabel>
-                <FormControl>
-                  <Textarea {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div>
-            <Label htmlFor="bill" className="mb-1.5 block">
-              Bill (Image or PDF)
-            </Label>
-            {expense?.bill_url && !removeBill && (
-              <div className="mb-2">
-                {expense.bill_url.toLowerCase().endsWith(".pdf") ? (
-                  <div className="flex items-center p-2 rounded-md border border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-                    <FileText className="h-8 w-8 text-red-500 mr-3" />
-                    <a
-                      href={expense.bill_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      download
-                      className="text-sm text-primary hover:underline flex-1"
-                    >
-                      View/Download PDF Receipt
-                    </a>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-muted-foreground hover:text-destructive"
-                      onClick={handleRemoveBill}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="relative w-32 h-32">
-                    <a href={expense.bill_url} download target="_blank">
-                      <Image
-                        src={expense.bill_url}
-                        alt="Receipt"
-                        layout="fill"
-                        className="rounded border object-cover"
-                      />
-                    </a>
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      className="absolute top-1 right-1 h-6 w-6"
-                      onClick={handleRemoveBill}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-            )}
-            <Input
-              id="bill"
-              type="file"
-              onChange={(e) =>
-                form.setValue("billFile", e.target.files?.[0] || null)
-              }
-              accept="image/*,application/pdf"
-              className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-foreground file:text-primary hover:file:bg-primary-foreground/90"
+      <Card className="w-full p-8">
+        <div className="flex items-center mb-4">
+          <Link href="/expense/list">
+            <Button variant="glass" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <h1 className="text-xl font-bold ml-4">Edit Expense</h1>
+        </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="amount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Amount</FormLabel>
+                  <FormControl>
+                    <Input type="number" required {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Saving..." : "Update Expense"}
-          </Button>
-        </form>
-      </Form>
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Date</FormLabel>
+                  <FormControl>
+                    <Input type="date" required {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="note"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Note</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div>
+              <Label htmlFor="bill" className="mb-1.5 block">
+                Bill (Image or PDF)
+              </Label>
+              {expense?.bill_url && !removeBill && (
+                <div className="mb-2">
+                  {expense.bill_url.toLowerCase().endsWith(".pdf") ? (
+                    <div className="flex items-center p-2 rounded-md border border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+                      <FileText className="h-8 w-8 text-red-500 mr-3" />
+                      <a
+                        href={expense.bill_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        download
+                        className="text-sm text-primary hover:underline flex-1"
+                      >
+                        View/Download PDF Receipt
+                      </a>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-muted-foreground hover:text-destructive"
+                        onClick={handleRemoveBill}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="relative w-32 h-32">
+                      <a href={expense.bill_url} download target="_blank">
+                        <Image
+                          src={expense.bill_url}
+                          alt="Receipt"
+                          layout="fill"
+                          className="rounded border object-cover"
+                        />
+                      </a>
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-1 right-1 h-6 w-6"
+                        onClick={handleRemoveBill}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
+              <Input
+                id="bill"
+                type="file"
+                onChange={(e) =>
+                  form.setValue("billFile", e.target.files?.[0] || null)
+                }
+                accept="image/*,application/pdf"
+                className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-foreground file:text-primary hover:file:bg-primary-foreground/90"
+              />
+            </div>
+            <Button
+              type="submit"
+              variant="glass"
+              className="w-full mt-5"
+              disabled={loading}
+            >
+              {loading ? "Saving..." : "Update Expense"}
+            </Button>
+          </form>
+        </Form>
+      </Card>
     </div>
   );
 }

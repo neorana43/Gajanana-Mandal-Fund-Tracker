@@ -12,7 +12,7 @@ function Card({
       data-slot="card"
       className={cn(
         solid ? "bg-card" : "glass",
-        "flex flex-col gap-8 py-8 px-6 transition-all duration-200 shadow-xl hover:shadow-2xl ",
+        "flex flex-col gap-8 py-8 px-6 transition-all duration-200 shadow-xl  hover:border-white hover:dark:border-black/70",
         className,
       )}
       {...props}

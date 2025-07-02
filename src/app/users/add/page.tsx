@@ -69,10 +69,10 @@ export default function AddUserPage() {
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <h1 className="text-xl font-bold ml-4">Add New User</h1>
+          <h1 className="text-xl font-bold ml-4">Add User</h1>
         </div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="displayName"
@@ -80,7 +80,7 @@ export default function AddUserPage() {
                 <FormItem>
                   <FormLabel>Display Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" required {...field} glass />
+                    <Input placeholder="John Doe" required {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -98,7 +98,6 @@ export default function AddUserPage() {
                       placeholder="newuser@example.com"
                       required
                       {...field}
-                      glass
                     />
                   </FormControl>
                   <FormMessage />
@@ -117,7 +116,6 @@ export default function AddUserPage() {
                       placeholder="••••••••"
                       required
                       {...field}
-                      glass
                     />
                   </FormControl>
                   <FormMessage />
@@ -135,7 +133,6 @@ export default function AddUserPage() {
                       type="tel"
                       placeholder="+91 98765 43210"
                       {...field}
-                      glass
                     />
                   </FormControl>
                   <FormMessage />
@@ -154,10 +151,10 @@ export default function AddUserPage() {
                       onValueChange={field.onChange}
                       required
                     >
-                      <SelectTrigger glass>
+                      <SelectTrigger>
                         <SelectValue placeholder="Select user type" />
                       </SelectTrigger>
-                      <SelectContent glass>
+                      <SelectContent>
                         <SelectItem value="volunteer">Volunteer</SelectItem>
                         <SelectItem value="admin">Admin</SelectItem>
                       </SelectContent>
@@ -171,7 +168,7 @@ export default function AddUserPage() {
               type="submit"
               disabled={isPending}
               variant="glass"
-              className="w-full"
+              className="w-full mt-5"
             >
               {isPending ? "Creating..." : "Create User"}
             </Button>

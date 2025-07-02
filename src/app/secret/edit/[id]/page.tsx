@@ -19,6 +19,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
+import { Card } from "@/components/ui/card";
 
 export default function EditSponsorPage() {
   const supabase = createClient();
@@ -104,96 +105,103 @@ export default function EditSponsorPage() {
     <div className="p-4 pb-24 max-w-2xl w-full mx-auto">
       <div className="flex items-center mb-4">
         <Link href="/secret/list">
-          <Button variant="outline" size="icon">
+          <Button variant="glass" size="icon">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <h1 className="text-xl font-bold ml-4">Edit Sponsor</h1>
       </div>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-          <FormField
-            control={form.control}
-            name="sponsorName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Sponsor Name</FormLabel>
-                <FormControl>
-                  <Input required {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="amount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Amount</FormLabel>
-                <FormControl>
-                  <Input type="number" required {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="category"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Category</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description (Optional)</FormLabel>
-                <FormControl>
-                  <Textarea {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="isFull"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex items-center space-x-2">
+      <Card className="w-full p-8">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="sponsorName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sponsor Name</FormLabel>
                   <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      id="isFull"
-                    />
+                    <Input required {...field} />
                   </FormControl>
-                  <label
-                    htmlFor="isFull"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Is this a full sponsorship?
-                  </label>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Saving..." : "Update Sponsor"}
-          </Button>
-        </form>
-      </Form>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="amount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Amount</FormLabel>
+                  <FormControl>
+                    <Input type="number" required {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description (Optional)</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="isFull"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        id="isFull"
+                      />
+                    </FormControl>
+                    <label
+                      htmlFor="isFull"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Is this a full sponsorship?
+                    </label>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              variant="glass"
+              className="w-full mt-5"
+              disabled={loading}
+            >
+              {loading ? "Saving..." : "Update Sponsor"}
+            </Button>
+          </form>
+        </Form>
+      </Card>
     </div>
   );
 }

@@ -81,7 +81,7 @@ export default function AllocationListPage() {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">Fund Allocations</h1>
         <Link href="/funds/allocate">
-          <Button>
+          <Button className="text-xs">
             <Plus className="mr-2 h-4 w-4" /> Add Allocation
           </Button>
         </Link>

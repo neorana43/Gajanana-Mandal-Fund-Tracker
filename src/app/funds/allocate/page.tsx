@@ -16,6 +16,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
+import { Card } from "@/components/ui/card";
 
 type User = {
   id: string;
@@ -79,49 +80,61 @@ export default function AllocatePage() {
 
   return (
     <div className="p-4 max-w-2xl w-full mx-auto">
-      <div className="flex items-center mb-4">
-        <Link href="/funds/list">
-          <Button variant="outline" size="icon">
-            <ArrowLeft className="h-4 w-4" />
+      <Card className="w-full p-8">
+        <div className="flex items-center mb-4">
+          <Link href="/funds/list">
+            <Button variant="glass" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <h1 className="text-xl font-bold ml-4">Allocate Funds</h1>
+        </div>
+        <form
+          className="space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleAllocate();
+          }}
+        >
+          <div>
+            <Label htmlFor="user" className="mb-1.5 block">
+              Select User
+            </Label>
+            <Select value={selectedUser} onValueChange={setSelectedUser}>
+              <SelectTrigger className="w-full h-12 text-left">
+                <SelectValue placeholder="Select a user" />
+              </SelectTrigger>
+              <SelectContent>
+                {users.map((user) => (
+                  <SelectItem key={user.id} value={user.id}>
+                    {user.displayName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="amount" className="mb-1.5 block">
+              Amount
+            </Label>
+            <Input
+              id="amount"
+              type="number"
+              placeholder="Enter amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
+          </div>
+          <Button
+            type="submit"
+            disabled={!selectedUser || !amount}
+            variant="glass"
+            className="w-full mt-5"
+          >
+            Allocate
           </Button>
-        </Link>
-        <h1 className="text-xl font-bold ml-4">Allocate Funds</h1>
-      </div>
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="user" className="mb-1.5 block">
-            Select User
-          </Label>
-          <Select value={selectedUser} onValueChange={setSelectedUser}>
-            <SelectTrigger className="w-full h-12 text-left">
-              <SelectValue placeholder="Select a user" />
-            </SelectTrigger>
-            <SelectContent>
-              {users.map((user) => (
-                <SelectItem key={user.id} value={user.id}>
-                  {user.displayName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <Label htmlFor="amount" className="mb-1.5 block">
-            Amount
-          </Label>
-          <Input
-            id="amount"
-            type="number"
-            placeholder="Enter amount"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
-        </div>
-        <Button onClick={handleAllocate} disabled={!selectedUser || !amount}>
-          Allocate
-        </Button>
-      </div>
+        </form>
+      </Card>
     </div>
   );
 }

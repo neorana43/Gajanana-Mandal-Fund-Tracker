@@ -10,6 +10,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { Card } from "../ui/card";
 
 type AllocationData = {
   user_email: string;
@@ -39,7 +40,7 @@ export default function UserAllocationChart({
 
   const chartData = Object.values(aggregatedData);
   return (
-    <div className="w-full h-80 bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-4 flex items-center justify-center">
+    <Card className="glass shadow-glass w-full h-80 p-4 flex items-center justify-center">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={chartData}
@@ -72,6 +73,6 @@ export default function UserAllocationChart({
           <Bar dataKey="amount" fill={COLORS[0]} radius={[16, 16, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
-    </div>
+    </Card>
   );
 }

@@ -98,7 +98,7 @@ export default function ExpenseListPage() {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">Expense List</h1>
         <Link href="/expense">
-          <Button>
+          <Button className="text-xs">
             <Plus className="mr-2 h-4 w-4" /> Add Expense
           </Button>
         </Link>

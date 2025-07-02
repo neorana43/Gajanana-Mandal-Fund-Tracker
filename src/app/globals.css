@@ -124,10 +124,15 @@
 @layer base {
   html,
   body {
-    @apply min-h-screen bg-gradient-to-br from-blue-100 via-white to-purple-100 text-foreground antialiased font-sans scroll-smooth text-base;
+    @apply min-h-screen text-foreground antialiased font-sans scroll-smooth text-base;
     font-family: "Inter", system-ui, sans-serif;
     letter-spacing: 0.01em;
     transition: background 0.3s, color 0.3s;
+    background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 40%, #f0e7ff 100%);
+  }
+  .dark html,
+  .dark body {
+    background: linear-gradient(135deg, #232336 0%, #18181b 60%, #3b3760 100%);
   }
 
   a {
@@ -161,6 +166,15 @@
   /* Glassmorphism utility for Liquid Glass UI */
   .glass {
     @apply backdrop-blur-lg backdrop-saturate-150 bg-white/60 dark:bg-gray-800/40 border border-white/40 dark:border-black/30 rounded-2xl shadow-2xl transition-all duration-300;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.6) 60%,
+      rgba(200, 200, 255, 0.3) 100%
+    );
+  }
+  .shadow-glass {
+    box-shadow: 0 8px 32px 0 rgba(80, 120, 255, 0.15),
+      0 1.5px 4px 0 rgba(80, 120, 255, 0.1);
   }
 }
 

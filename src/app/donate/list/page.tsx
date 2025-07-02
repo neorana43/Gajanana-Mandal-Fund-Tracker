@@ -78,7 +78,7 @@ export default function DonationListPage() {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">Donations</h1>
         <Link href="/donate">
-          <Button>
+          <Button className="text-xs">
             <Plus className="mr-2 h-4 w-4" /> Add Donation
           </Button>
         </Link>

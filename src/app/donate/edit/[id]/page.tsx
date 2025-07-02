@@ -18,6 +18,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
+import { Card } from "@/components/ui/card";
 
 export default function EditDonationPage() {
   const supabase = createClient();
@@ -117,89 +118,96 @@ export default function EditDonationPage() {
         </Link>
         <h1 className="text-xl font-bold mb-4">Edit Donation</h1>
       </div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-          <FormField
-            control={form.control}
-            name="donorName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Donor Name</FormLabel>
-                <FormControl>
-                  <Input required {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="houseNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>House Number (Optional)</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="amount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Amount</FormLabel>
-                <FormControl>
-                  <Input type="number" required {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="contact"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contact (Optional)</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="isRecurring"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex items-center space-x-2">
+      <Card className="w-full p-8">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="donorName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Donor Name</FormLabel>
                   <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      id="isRecurring"
-                    />
+                    <Input required {...field} />
                   </FormControl>
-                  <label
-                    htmlFor="isRecurring"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Is this a recurring donation?
-                  </label>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Saving..." : "Update Donation"}
-          </Button>
-        </form>
-      </Form>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="houseNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>House Number (Optional)</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="amount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Amount</FormLabel>
+                  <FormControl>
+                    <Input type="number" required {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="contact"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Contact (Optional)</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="isRecurring"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        id="isRecurring"
+                      />
+                    </FormControl>
+                    <label
+                      htmlFor="isRecurring"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Is this a recurring donation?
+                    </label>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              variant="glass"
+              className="w-full mt-5"
+              disabled={loading}
+            >
+              {loading ? "Saving..." : "Update Donation"}
+            </Button>
+          </form>
+        </Form>
+      </Card>
     </div>
   );
 }

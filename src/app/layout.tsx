@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description:
     "Track donations, expenses, sponsors, and more for Ganesh Mandal.",
   icons: {
-    icon: "/fevicon.svg",
+    icon: "/app-icon.svg",
   },
 };
 

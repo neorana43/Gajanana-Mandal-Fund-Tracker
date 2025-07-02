@@ -5,6 +5,7 @@ import FundPieChart from "@/components/charts/FundPieChart";
 import UserAllocationChart from "@/components/charts/UserAllocationChart";
 import DashboardTabs from "@/components/layouts/DashboardTabs";
 import { Tables } from "@/types/supabase";
+import { Card } from "@/components/ui/card";
 
 type Sponsor = Tables<"sponsors">;
 type Allocation = {
@@ -107,13 +108,10 @@ export default async function PublicDashboard() {
   }
 
   const summaryCards = [
-    <div
-      key="donations"
-      className="bg-white rounded-xl shadow p-4 text-center border"
-    >
+    <Card key="donations" className="glass shadow-glass p-4 text-center">
       <p className="text-sm text-muted-foreground">Total Donations</p>
       <p className="text-lg font-semibold text-primary">₹{totalDonations}</p>
-    </div>,
+    </Card>,
   ];
 
   if (isAdmin) {
@@ -121,41 +119,32 @@ export default async function PublicDashboard() {
     const sponsorBalance = totalIncome - totalExpenses;
 
     summaryCards.push(
-      <div
-        key="sponsors"
-        className="bg-white rounded-xl shadow p-4 text-center border"
-      >
+      <Card key="sponsors" className="glass shadow-glass p-4 text-center">
         <p className="text-sm text-muted-foreground">Total Sponsors</p>
         <p className="text-lg font-semibold text-teal-500">₹{totalSponsors}</p>
-      </div>,
-      <div
-        key="income"
-        className="bg-white rounded-xl shadow p-4 text-center border"
-      >
+      </Card>,
+      <Card key="income" className="glass shadow-glass p-4 text-center">
         <p className="text-sm text-muted-foreground">Total Income</p>
         <p className="text-lg font-semibold text-blue-600">₹{totalIncome}</p>
-      </div>,
-      <div
-        key="spent"
-        className="bg-white rounded-xl shadow p-4 text-center border"
-      >
+      </Card>,
+      <Card key="spent" className="glass shadow-glass p-4 text-center">
         <p className="text-sm text-muted-foreground">Spent</p>
         <p className="text-lg font-semibold text-destructive">
           ₹{totalExpenses}
         </p>
-      </div>,
-      <div
+      </Card>,
+      <Card
         key="donation_balance"
-        className="bg-white rounded-xl shadow p-4 text-center border"
+        className="glass shadow-glass p-4 text-center"
       >
         <p className="text-sm text-muted-foreground">Balance (Donations)</p>
         <p className="text-lg font-semibold text-green-600">
           ₹{donationBalance}
         </p>
-      </div>,
-      <div
+      </Card>,
+      <Card
         key="sponsor_balance"
-        className="bg-white rounded-xl shadow p-4 text-center border"
+        className="glass shadow-glass p-4 text-center"
       >
         <p className="text-sm text-muted-foreground">
           Balance (Incl. Sponsors)
@@ -163,28 +152,22 @@ export default async function PublicDashboard() {
         <p className="text-lg font-semibold text-green-700">
           ₹{sponsorBalance}
         </p>
-      </div>,
+      </Card>,
     );
   } else {
     summaryCards.push(
-      <div
-        key="spent"
-        className="bg-white rounded-xl shadow p-4 text-center border"
-      >
+      <Card key="spent" className="glass shadow-glass p-4 text-center">
         <p className="text-sm text-muted-foreground">Spent</p>
         <p className="text-lg font-semibold text-destructive">
           ₹{totalExpenses}
         </p>
-      </div>,
-      <div
-        key="balance"
-        className="bg-white rounded-xl shadow p-4 text-center border"
-      >
+      </Card>,
+      <Card key="balance" className="glass shadow-glass p-4 text-center">
         <p className="text-sm text-muted-foreground">Balance</p>
         <p className="text-lg font-semibold text-green-600">
           ₹{donationBalance}
         </p>
-      </div>,
+      </Card>,
     );
   }
 
@@ -229,7 +212,7 @@ export default async function PublicDashboard() {
             </h2>
             <ul className="space-y-2">
               {sponsors.slice(0, 5).map((s: Sponsor, idx) => (
-                <li key={idx} className="bg-white rounded-lg shadow p-3 border">
+                <li key={idx} className="glass rounded-lg shadow p-3 border">
                   <div className="flex justify-between items-center">
                     <div>
                       <span className="font-medium">
@@ -264,7 +247,7 @@ export default async function PublicDashboard() {
   }
 
   return (
-    <div className="p-4 pb-24 max-w-2xl w-full mx-auto w-full">
+    <div className="p-4 pb-24 max-w-2xl  mx-auto w-full">
       <h1 className="text-xl font-bold mb-4">Dashboard</h1>
       <DashboardTabs tabs={tabs} />
     </div>

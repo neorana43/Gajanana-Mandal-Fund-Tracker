@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Plus, UserCheck, UserX } from "lucide-react";
 import Link from "next/link";
 
 type UserType = "admin" | "volunteer";
@@ -26,6 +26,7 @@ type User = {
   displayName: string;
   phone: string;
   userType: UserType;
+  active?: boolean;
 };
 
 export default function ListUsersPage() {
@@ -54,20 +55,18 @@ export default function ListUsersPage() {
     fetchUsers();
   }, []);
 
-  const handleDelete = async (userId: string) => {
+  const handleToggleActive = async (userId: string, setActive: boolean) => {
     startTransition(async () => {
       const response = await fetch("/api/users/delete", {
-        method: "DELETE",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: userId }),
+        body: JSON.stringify({ id: userId, setActive }),
       });
-
       const result = await response.json();
-
       if (!response.ok) {
-        toast.error(result.error || "Failed to delete user.");
+        toast.error(result.error || "Failed to update user status.");
       } else {
-        toast.success("User deleted successfully!");
+        toast.success(setActive ? "User activated!" : "User deactivated!");
         fetchUsers();
       }
     });
@@ -78,7 +77,7 @@ export default function ListUsersPage() {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">Users</h1>
         <Link href="/users/add">
-          <Button>
+          <Button className="text-xs">
             <Plus className="mr-2 h-4 w-4" /> Add User
           </Button>
         </Link>
@@ -132,25 +131,53 @@ export default function ListUsersPage() {
                   </Button>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="destructive" size="sm">
-                        <Trash2 className="h-3 w-3 mr-2" /> Delete
+                      <Button
+                        variant={
+                          user.active === false ? "secondary" : "destructive"
+                        }
+                        size="sm"
+                      >
+                        {user.active === false ? (
+                          <>
+                            <UserCheck className="h-3 w-3 mr-2 " />
+                            Activate
+                          </>
+                        ) : (
+                          <>
+                            <UserX className="h-3 w-3 mr-2 " />
+                            Deactivate
+                          </>
+                        )}
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Delete User</AlertDialogTitle>
+                        <AlertDialogTitle>
+                          {user.active === false
+                            ? "Activate User"
+                            : "Deactivate User"}
+                        </AlertDialogTitle>
                         <AlertDialogDescription>
-                          Are you sure you want to delete {user.displayName}?
-                          This action cannot be undone.
+                          {user.active === false
+                            ? `Are you sure you want to activate ${user.displayName}?`
+                            : `Are you sure you want to deactivate ${user.displayName}? This user will not be able to log in until reactivated.`}
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                          onClick={() => handleDelete(user.id)}
+                          onClick={() =>
+                            handleToggleActive(user.id, user.active === false)
+                          }
                           disabled={isPending}
                         >
-                          {isPending ? "Deleting..." : "Delete"}
+                          {isPending
+                            ? user.active === false
+                              ? "Activating..."
+                              : "Deactivating..."
+                            : user.active === false
+                            ? "Activate"
+                            : "Deactivate"}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>

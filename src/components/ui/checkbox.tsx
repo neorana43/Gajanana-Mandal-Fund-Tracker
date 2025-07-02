@@ -8,15 +8,13 @@ import { cn } from "@/lib/utils";
 
 function Checkbox({
   className,
-  glass = false,
   ...props
-}: React.ComponentProps<typeof CheckboxPrimitive.Root> & { glass?: boolean }) {
+}: React.ComponentProps<typeof CheckboxPrimitive.Root>) {
   return (
     <CheckboxPrimitive.Root
       data-slot="checkbox"
       className={cn(
-        glass ? "glass" : "",
-        "size-4 rounded-full border-2 border-accent bg-white/30 dark:bg-gray-800/30 backdrop-blur-md focus:border-primary focus:ring-2 focus:ring-primary transition-all duration-200 shrink-0 outline-none disabled:cursor-not-allowed disabled:opacity-50",
+        "bg-white/40 dark:bg-gray-800/30 border-2 border-white/80 rounded-full size-4 shadow-[0_2px_8px_0_rgba(80,120,255,0.08)] focus:border-primary focus:ring-2 focus:ring-primary transition-all duration-200 shrink-0 outline outline-1 outline-white/30 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:border-primary data-[state=checked]:bg-primary/20",
         className,
       )}
       {...props}

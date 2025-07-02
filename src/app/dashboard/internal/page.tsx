@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { createServerClientWithCookies } from "@/lib/supabase";
 import DashboardTabs from "@/components/layouts/DashboardTabs";
+import { Card } from "@/components/ui/card";
 
 export default async function InternalDashboard() {
   const cookieStore = await cookies();
@@ -29,25 +30,25 @@ export default async function InternalDashboard() {
           {
             label: "Summary",
             content: (
-              <div className="bg-white rounded-xl shadow p-4 border text-sm text-muted-foreground">
+              <Card className="glass shadow-glass p-4 text-sm text-muted-foreground">
                 <p>This view is intended for admin insights only.</p>
                 <ul className="list-disc pl-6 mt-2">
                   <li>Allocation audit log</li>
                   <li>User-level fund control</li>
                   <li>Internal-only financial breakdown</li>
                 </ul>
-              </div>
+              </Card>
             ),
           },
           {
             label: "Fund Flow",
             content: (
-              <div className="bg-white rounded-xl shadow p-4 border text-sm">
+              <Card className="glass shadow-glass p-4 text-sm">
                 <p className="text-muted-foreground mb-2">
                   (Coming soon) Visualize internal transfers and allocation
                   deltas.
                 </p>
-              </div>
+              </Card>
             ),
           },
           {

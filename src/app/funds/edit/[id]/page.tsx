@@ -121,7 +121,7 @@ export default function EditAllocationPage() {
     <div className="p-4 max-w-2xl w-full mx-auto">
       <div className="flex items-center mb-4">
         <Link href="/funds/list">
-          <Button variant="outline" size="icon">
+          <Button variant="glass" size="icon">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>

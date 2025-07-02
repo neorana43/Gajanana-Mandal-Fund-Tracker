@@ -163,10 +163,10 @@ export default function ExpenseForm() {
                         onValueChange={field.onChange}
                         required
                       >
-                        <SelectTrigger glass>
+                        <SelectTrigger>
                           <SelectValue placeholder="Select user" />
                         </SelectTrigger>
-                        <SelectContent glass>
+                        <SelectContent>
                           {users.map((u) => (
                             <SelectItem key={u.id} value={u.id}>
                               {u.displayName}
@@ -187,7 +187,7 @@ export default function ExpenseForm() {
                 <FormItem>
                   <FormLabel>Amount</FormLabel>
                   <FormControl>
-                    <Input type="number" required {...field} glass />
+                    <Input type="number" required {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -200,7 +200,7 @@ export default function ExpenseForm() {
                 <FormItem>
                   <FormLabel>Category</FormLabel>
                   <FormControl>
-                    <Input {...field} glass />
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -216,7 +216,6 @@ export default function ExpenseForm() {
                     <Textarea
                       placeholder="Optional description or bill info"
                       {...field}
-                      glass
                     />
                   </FormControl>
                   <FormMessage />
@@ -236,7 +235,6 @@ export default function ExpenseForm() {
                       onChange={(e) =>
                         field.onChange(e.target.files?.[0] || null)
                       }
-                      glass
                     />
                   </FormControl>
                   <FormMessage />

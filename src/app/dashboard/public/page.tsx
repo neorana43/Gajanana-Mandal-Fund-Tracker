@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import FundPieChart from "@/components/charts/FundPieChart";
 import FundChart from "@/components/charts/FundChart";
 import DashboardTabs from "@/components/layouts/DashboardTabs";
+import { Card } from "@/components/ui/card";
 
 function groupByDate(
   data: { amount: number; created_at?: string | null; date?: string | null }[],
@@ -78,24 +79,24 @@ export default async function PublicDashboardPage() {
       content: hasData ? (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <div className="bg-white rounded-xl shadow p-4 text-center border">
+            <Card className="glass shadow-glass p-4 text-center">
               <p className="text-sm text-muted-foreground">Total Donations</p>
               <p className="text-lg font-semibold text-primary">
                 ₹{totalDonations}
               </p>
-            </div>
-            <div className="bg-white rounded-xl shadow p-4 text-center border">
+            </Card>
+            <Card className="glass shadow-glass p-4 text-center">
               <p className="text-sm text-muted-foreground">Spent</p>
               <p className="text-lg font-semibold text-destructive">
                 ₹{totalExpenses}
               </p>
-            </div>
-            <div className="bg-white rounded-xl shadow p-4 text-center border">
+            </Card>
+            <Card className="glass shadow-glass p-4 text-center">
               <p className="text-sm text-muted-foreground">Balance</p>
               <p className="text-lg font-semibold text-green-600">
                 ₹{donationBalance}
               </p>
-            </div>
+            </Card>
           </div>
           <div className="mb-8">
             <FundPieChart
@@ -140,7 +141,7 @@ export default async function PublicDashboardPage() {
               {leaderboard.map((entry, idx) => (
                 <li
                   key={entry.name}
-                  className="bg-white rounded-lg shadow p-3 border flex justify-between items-center"
+                  className="glass rounded-lg shadow p-3 border flex justify-between items-center"
                 >
                   <span className="font-medium">
                     {idx + 1}. {entry.name}

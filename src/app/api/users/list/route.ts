@@ -35,6 +35,7 @@ export async function GET(req: NextRequest) {
         displayName: user.user_metadata?.display_name,
         phone: user.user_metadata?.phone,
         userType: roleData?.role || "volunteer",
+        active: user.user_metadata?.active !== false, // true if not explicitly false
       };
 
       return NextResponse.json({ users: [simplifiedUser] }, { status: 200 });
@@ -64,6 +65,7 @@ export async function GET(req: NextRequest) {
       displayName: u.user_metadata?.display_name,
       phone: u.user_metadata?.phone,
       userType: roleMap.get(u.id) || "volunteer", // Default to volunteer
+      active: u.user_metadata?.active !== false, // true if not explicitly false
     }));
 
     return NextResponse.json({ users: simplifiedUsers }, { status: 200 });

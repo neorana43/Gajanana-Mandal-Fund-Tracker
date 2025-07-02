@@ -14,16 +14,12 @@ const SelectValue = SelectPrimitive.Value;
 
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> & {
-    glass?: boolean;
-  }
->(({ className, glass = false, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
+>(({ className, children, ...props }, ref) => (
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      glass
-        ? "glass px-3 py-2 text-sm flex items-center justify-between rounded-full border-2 border-white focus:border-primary focus:ring-2 focus:ring-primary transition-all duration-200 w-full disabled:cursor-not-allowed disabled:opacity-50"
-        : "px-3 py-2 text-sm flex items-center justify-between  rounded-full border-2 border-white bg-white/30 dark:bg-gray-800/30 backdrop-blur-md focus:border-primary focus:ring-2 focus:ring-primary transition-all duration-200 w-full disabled:cursor-not-allowed disabled:opacity-50",
+      "bg-white dark:bg-gray-800 border-2 border-white/80 rounded-full px-4 py-2 text-base font-normal shadow-[0_2px_8px_0_rgba(80,120,255,0.08)] flex items-center justify-between focus:border-primary focus:ring-2 focus:ring-primary transition-all duration-200 w-full disabled:cursor-not-allowed disabled:opacity-50 outline outline-1 outline-white/30",
       className,
     )}
     {...props}
@@ -38,41 +34,32 @@ SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 
 const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content> & {
-    glass?: boolean;
-  }
->(
-  (
-    { className, glass = false, children, position = "popper", ...props },
-    ref,
-  ) => (
-    <SelectPrimitive.Portal>
-      <SelectPrimitive.Content
-        ref={ref}
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
+>(({ className, children, position = "popper", ...props }, ref) => (
+  <SelectPrimitive.Portal>
+    <SelectPrimitive.Content
+      ref={ref}
+      className={cn(
+        "bg-white dark:bg-gray-800 border-2 border-white/80 rounded-xl shadow-md text-base font-normal",
+        position === "popper" &&
+          "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+        className,
+      )}
+      position={position}
+      {...props}
+    >
+      <SelectPrimitive.Viewport
         className={cn(
-          glass
-            ? "glass rounded-full border-2 border-white text-sm shadow-md"
-            : "rounded-full border-2 border-white bg-white/30 dark:bg-gray-800/30 backdrop-blur-md text-sm shadow-md",
+          "p-1",
           position === "popper" &&
-            "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
-          className,
+            "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]",
         )}
-        position={position}
-        {...props}
       >
-        <SelectPrimitive.Viewport
-          className={cn(
-            "p-1",
-            position === "popper" &&
-              "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]",
-          )}
-        >
-          {children}
-        </SelectPrimitive.Viewport>
-      </SelectPrimitive.Content>
-    </SelectPrimitive.Portal>
-  ),
-);
+        {children}
+      </SelectPrimitive.Viewport>
+    </SelectPrimitive.Content>
+  </SelectPrimitive.Portal>
+));
 SelectContent.displayName = SelectPrimitive.Content.displayName;
 
 const SelectLabel = React.forwardRef<

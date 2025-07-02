@@ -10,6 +10,7 @@ import {
   CartesianGrid,
   Legend,
 } from "recharts";
+import { Card } from "../ui/card";
 
 export default function FundChart({
   data,
@@ -17,7 +18,7 @@ export default function FundChart({
   data: { date: string; donations: number; expenses: number }[];
 }) {
   return (
-    <div className="w-full h-80 bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-4 flex items-center justify-center">
+    <Card className="glass shadow-glass w-full h-80 p-4 flex items-center justify-center">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data}
@@ -63,6 +64,6 @@ export default function FundChart({
           />
         </LineChart>
       </ResponsiveContainer>
-    </div>
+    </Card>
   );
 }

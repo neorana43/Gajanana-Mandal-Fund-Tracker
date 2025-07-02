@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { Card } from "../ui/card";
 
 export default function FundPieChart({
   totalDonations,
@@ -39,7 +40,7 @@ export default function FundPieChart({
   const COLORS = ["#a78bfa", "#06b6d4", "#f59e42", "#22c55e", "#6366f1"]; // violet, cyan, orange, green, indigo
 
   return (
-    <div className="w-full h-80 bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-4 flex items-center justify-center">
+    <Card className="glass shadow-glass w-full h-80 p-4 flex items-center justify-center">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
@@ -82,6 +83,6 @@ export default function FundPieChart({
           />
         </PieChart>
       </ResponsiveContainer>
-    </div>
+    </Card>
   );
 }

@@ -2,10 +2,8 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export async function getUserRole(supabase: SupabaseClient) {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  const user = session?.user;
+  const { data } = await supabase.auth.getUser();
+  const user = data.user;
 
   if (!user) {
     return null;

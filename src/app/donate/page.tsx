@@ -85,10 +85,10 @@ export default function DonatePage() {
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <h1 className="text-xl font-bold ml-4">Make a Donation</h1>
+          <h1 className="text-xl font-bold ml-4">Add Donation</h1>
         </div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="donorName"
@@ -96,7 +96,7 @@ export default function DonatePage() {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your Name" required {...field} glass />
+                    <Input placeholder="Your Name" required {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -109,7 +109,7 @@ export default function DonatePage() {
                 <FormItem>
                   <FormLabel>House Number (Optional)</FormLabel>
                   <FormControl>
-                    <Input {...field} glass />
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -127,7 +127,6 @@ export default function DonatePage() {
                       placeholder="Enter amount"
                       required
                       {...field}
-                      glass
                     />
                   </FormControl>
                   <FormMessage />
@@ -144,7 +143,6 @@ export default function DonatePage() {
                     <Input
                       placeholder="Any additional contact information"
                       {...field}
-                      glass
                     />
                   </FormControl>
                   <FormMessage />
@@ -162,7 +160,6 @@ export default function DonatePage() {
                       checked={field.value}
                       onCheckedChange={field.onChange}
                       id="isRecurring"
-                      glass
                     />
                   </FormControl>
                   <FormMessage />
@@ -171,9 +168,9 @@ export default function DonatePage() {
             />
             <Button
               type="submit"
-              disabled={loading}
               variant="glass"
-              className="w-full"
+              className="w-full mt-5"
+              disabled={loading}
             >
               {loading ? "Submitting..." : "Submit Donation"}
             </Button>

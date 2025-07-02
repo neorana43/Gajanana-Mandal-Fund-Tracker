@@ -77,7 +77,7 @@ export default function SponsorListPage() {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">Sponsors</h1>
         <Link href="/secret">
-          <Button>
+          <Button className="text-xs">
             <Plus className="mr-2 h-4 w-4" /> Add Sponsor
           </Button>
         </Link>

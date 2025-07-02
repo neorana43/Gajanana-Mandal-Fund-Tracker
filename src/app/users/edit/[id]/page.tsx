@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/form";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 type UserType = "admin" | "volunteer";
 
@@ -118,90 +119,101 @@ export default function EditUserPage() {
 
   return (
     <div className="p-4 pb-24 max-w-2xl w-full mx-auto">
-      <div className="flex items-center mb-4">
-        <Link href="/users/list">
-          <Button variant="outline" size="icon">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
-        <h1 className="text-xl font-bold ml-4">Edit User</h1>
-      </div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-          <FormField
-            control={form.control}
-            name="displayName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Display Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="John Doe" required {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="user@example.com"
-                    required
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone Number (Optional)</FormLabel>
-                <FormControl>
-                  <Input type="tel" placeholder="+91 98765 43210" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="userType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>User Type</FormLabel>
-                <FormControl>
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    required
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select user type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="volunteer">Volunteer</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" disabled={isPending} className="w-full">
-            {isPending ? "Saving..." : "Save Changes"}
-          </Button>
-        </form>
-      </Form>
+      <Card className="w-full p-8">
+        <div className="flex items-center mb-4">
+          <Link href="/users/list">
+            <Button variant="glass" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <h1 className="text-xl font-bold ml-4">Edit User</h1>
+        </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="displayName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Display Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John Doe" required {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder="user@example.com"
+                      required
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number (Optional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="tel"
+                      placeholder="+91 98765 43210"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="userType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>User Type</FormLabel>
+                  <FormControl>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      required
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select user type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="volunteer">Volunteer</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              variant="glass"
+              className="w-full mt-5"
+              disabled={isPending}
+            >
+              {isPending ? "Saving..." : "Save Changes"}
+            </Button>
+          </form>
+        </Form>
+      </Card>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { createServerClientWithCookies } from "@/lib/supabase";
 import DashboardTabs from "@/components/layouts/DashboardTabs";
+import { Card } from "@/components/ui/card";
 
 export default async function UserDashboard() {
   const cookieStore = await cookies();
@@ -55,24 +56,24 @@ export default async function UserDashboard() {
             label: "Overview",
             content: (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                <div className="bg-white rounded-xl shadow p-4 text-center border">
+                <Card className="glass shadow-glass p-4 text-center">
                   <p className="text-sm text-muted-foreground">Allocated</p>
                   <p className="text-lg font-semibold text-primary">
                     ₹{allocated}
                   </p>
-                </div>
-                <div className="bg-white rounded-xl shadow p-4 text-center border">
+                </Card>
+                <Card className="glass shadow-glass p-4 text-center">
                   <p className="text-sm text-muted-foreground">Spent</p>
                   <p className="text-lg font-semibold text-destructive">
                     ₹{spent}
                   </p>
-                </div>
-                <div className="bg-white rounded-xl shadow p-4 text-center border">
+                </Card>
+                <Card className="glass shadow-glass p-4 text-center">
                   <p className="text-sm text-muted-foreground">Remaining</p>
                   <p className="text-lg font-semibold text-green-600">
                     ₹{remaining}
                   </p>
-                </div>
+                </Card>
               </div>
             ),
           },

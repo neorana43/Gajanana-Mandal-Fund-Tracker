@@ -28,12 +28,19 @@ export default function LoginPage() {
       email,
       password,
     });
-
     setLoading(false);
 
     if (error) {
       toast.error("Login failed.");
     } else {
+      // Fetch user to check active status
+      const { data } = await supabase.auth.getUser();
+      const user = data.user;
+      if (user?.user_metadata?.active === false) {
+        toast.error("Your account is deactivated. Please contact admin.");
+        await supabase.auth.signOut();
+        return;
+      }
       toast.success("Login successful!");
       router.push("/dashboard");
     }
@@ -41,7 +48,7 @@ export default function LoginPage() {
 
   return (
     <div className="h-full flex items-center justify-center p-6 my-auto max-w-2xl w-full mx-auto">
-      <Card className="w-full space-y-6 p-8">
+      <Card className="w-full p-8">
         <div className="text-center">
           <h1 className="text-2xl font-bold">Login</h1>
           <p className="text-sm text-muted-foreground">
@@ -49,7 +56,13 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="space-y-4">
+        <form
+          className="space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleLogin();
+          }}
+        >
           <div>
             <Label className="text-md mb-1.5 block" htmlFor="email">
               Email
@@ -60,7 +73,6 @@ export default function LoginPage() {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              glass
             />
           </div>
 
@@ -74,14 +86,18 @@ export default function LoginPage() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              glass
             />
           </div>
 
-          <Button onClick={handleLogin} disabled={loading} variant="glass">
+          <Button
+            type="submit"
+            disabled={loading}
+            variant="glass"
+            className="w-full mt-5"
+          >
             {loading ? "Logging in..." : "Login"}
           </Button>
-        </div>
+        </form>
       </Card>
     </div>
   );
