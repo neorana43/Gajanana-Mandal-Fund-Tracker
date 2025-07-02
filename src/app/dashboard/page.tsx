@@ -33,7 +33,7 @@ function groupByDate(
 }
 
 export default async function PublicDashboard() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const role = await getUserRole(supabase);
 
   const [donationRes, expenseRes, sponsorRes, allocationRes] =

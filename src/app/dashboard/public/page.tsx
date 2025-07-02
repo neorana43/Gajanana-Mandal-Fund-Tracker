@@ -22,7 +22,7 @@ function groupByDate(
 }
 
 export default async function PublicDashboardPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const [donationRes, expenseRes] = await Promise.all([
     supabase
       .from("donations")
