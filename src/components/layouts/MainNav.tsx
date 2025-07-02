@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 import { Button } from "@/components/ui/button";
+import { ShareDashboardButton } from "@/components/ShareDashboardButton";
 
 type NavItem = {
   href: string;
@@ -199,6 +200,9 @@ export default function MainNav() {
                     >
                       User List
                     </Link>
+                  </li>
+                  <li>
+                    <ShareDashboardButton />
                   </li>
                 </>
               )}
