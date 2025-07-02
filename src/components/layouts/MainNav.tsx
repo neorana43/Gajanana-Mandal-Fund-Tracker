@@ -201,7 +201,7 @@ export default function MainNav() {
                       User List
                     </Link>
                   </li>
-                  <li>
+                  <li className="w-full">
                     <ShareDashboardButton />
                   </li>
                 </>
