@@ -6,7 +6,6 @@ import UserAllocationChart from "@/components/charts/UserAllocationChart";
 import DashboardTabs from "@/components/layouts/DashboardTabs";
 import { Tables } from "@/types/supabase";
 import { Card } from "@/components/ui/card";
-import { ShareDashboardButton } from "@/components/ShareDashboardButton";
 
 type Sponsor = Tables<"sponsors">;
 type Allocation = {
