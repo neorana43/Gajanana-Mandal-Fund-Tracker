@@ -30,16 +30,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Name is required" }, { status: 400 });
   }
 
-  // Insert mandal
-  const { data, error } = await supabase
+  // Insert mandal with owner_id
+  const { data: mandal, error: mandalError } = await supabase
     .from("mandals")
-    .insert([{ name, description, address, logo }])
+    .insert([{ name, description, address, logo, owner_id: user.id }])
     .select()
     .single();
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (mandalError) {
+    return NextResponse.json({ error: mandalError.message }, { status: 500 });
   }
 
-  return NextResponse.json({ mandal: data }, { status: 201 });
+  // Insert creator as admin in mandal_users
+  const { error: muError } = await supabase.from("mandal_users").insert([
+    {
+      mandal_id: mandal.id,
+      user_id: user.id,
+      role: "admin",
+      status: "active",
+      invited_by: user.id,
+      accepted_at: new Date().toISOString(),
+    },
+  ]);
+  if (muError) {
+    return NextResponse.json({ error: muError.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ mandal }, { status: 201 });
 }
