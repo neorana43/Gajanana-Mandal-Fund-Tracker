@@ -156,15 +156,20 @@ export default function ManageMandalsPage() {
                           setShowInviteId(open ? mandal.id : null)
                         }
                       >
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            aria-label="Invite User"
-                          >
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                aria-label="Invite User"
+                              >
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                            </DialogTrigger>
+                          </TooltipTrigger>
+                          <TooltipContent>Invite User</TooltipContent>
+                        </Tooltip>
                         <DialogContent>
                           <DialogHeader>
                             <DialogTitle>

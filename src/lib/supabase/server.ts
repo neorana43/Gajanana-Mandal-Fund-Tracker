@@ -1,4 +1,5 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
 export const createClient = async () => {
@@ -32,5 +33,13 @@ export const createClient = async () => {
         },
       },
     },
+  );
+};
+
+// Admin client for server-side admin actions (no cookies, uses service role key)
+export const createAdminClient = () => {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
 };

@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
+import { onboardMandalUser } from "@/lib/auth/onboardMandalUser";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -37,6 +38,12 @@ export default function SignupPage() {
     if (error) {
       toast.error(error.message || "Signup failed.");
     } else {
+      // Onboard invited user to mandal if needed
+      const { data } = await supabase.auth.getUser();
+      const user = data.user;
+      if (user) {
+        await onboardMandalUser(user.id, user.user_metadata);
+      }
       toast.success(
         "Signup successful! Please check your email to verify your account.",
       );

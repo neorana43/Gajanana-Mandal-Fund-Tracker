@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
+import { onboardMandalUser } from "@/lib/auth/onboardMandalUser";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -47,6 +48,8 @@ export default function LoginPage() {
         await supabase.auth.signOut();
         return;
       }
+      // Onboard invited user to mandal if needed
+      await onboardMandalUser(user.id, user.user_metadata);
       toast.success("Login successful!");
       // Fetch user's mandal memberships
       type Membership = { mandals: { slug: string } | null };
