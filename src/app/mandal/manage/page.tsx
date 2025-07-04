@@ -37,7 +37,6 @@ export default function ManageMandalsPage() {
   const [showInviteId, setShowInviteId] = useState<string | null>(null);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("volunteer");
-  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const fetchMandals = async () => {
@@ -58,13 +57,6 @@ export default function ManageMandalsPage() {
     };
     fetchMandals();
   }, []);
-
-  useEffect(() => {
-    // Check if user is admin for any mandal (simple check: if any mandal.owner_id matches current user)
-    // In a real app, fetch user id from session or context
-    // For now, if mandals exist, allow invite (for demo)
-    setIsAdmin(mandals.length > 0);
-  }, [mandals]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this mandal?")) return;
