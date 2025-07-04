@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -36,18 +38,53 @@ export default function LoginPage() {
       // Fetch user to check active status
       const { data } = await supabase.auth.getUser();
       const user = data.user;
-      if (user?.user_metadata?.active === false) {
+      if (!user) {
+        toast.error("User not found after login.");
+        return;
+      }
+      if (user.user_metadata?.active === false) {
         toast.error("Your account is deactivated. Please contact admin.");
         await supabase.auth.signOut();
         return;
       }
       toast.success("Login successful!");
-      router.push("/dashboard");
+      // Fetch user's mandal memberships
+      type Membership = { mandals: { slug: string } | null };
+      const { data: memberships, error: membershipError } = await supabase
+        .from("mandal_users")
+        .select("mandals(slug)")
+        .eq("user_id", user.id)
+        .eq("status", "active");
+
+      const typedMemberships = memberships as unknown as Membership[];
+      const firstMandal = typedMemberships?.find(
+        (m) => m.mandals && m.mandals.slug,
+      );
+      if (
+        membershipError ||
+        !typedMemberships ||
+        typedMemberships.length === 0 ||
+        !firstMandal
+      ) {
+        router.push("/mandal/onboarding");
+      } else {
+        // Use the first mandal as default, or implement your own logic
+        const slug = firstMandal.mandals!.slug;
+        router.push(`/mandal/${slug}/dashboard`);
+      }
     }
   };
 
   return (
-    <div className="h-full flex items-center justify-center p-6 my-auto max-w-2xl w-full mx-auto">
+    <div className="h-full flex flex-col items-center justify-center px-6 pb-6 my-auto max-w-2xl w-full mx-auto">
+      <Image
+        src="/logo.svg"
+        alt="Gajanana Mandal Logo"
+        width={96}
+        height={96}
+        className="mx-auto mb-6 h-24"
+        priority
+      />
       <Card className="w-full p-8">
         <div className="text-center">
           <h1 className="text-2xl font-bold">Login</h1>
@@ -98,6 +135,17 @@ export default function LoginPage() {
             {loading ? "Logging in..." : "Login"}
           </Button>
         </form>
+        <div className="flex flex-col items-center gap-2 mt-6">
+          <Link
+            href="/reset-password"
+            className="text-xs text-primary hover:underline"
+          >
+            Forgot password?
+          </Link>
+          <Link href="/signup" className="text-xs text-primary hover:underline">
+            Don&apos;t have an account? Sign up
+          </Link>
+        </div>
       </Card>
     </div>
   );

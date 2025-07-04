@@ -1,17 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
+import { MandalSlugContext } from "@/app/mandal/[slug]/layout";
 
 export default function FloatingButtons() {
   const [open, setOpen] = useState(false);
+  const slug = useContext(MandalSlugContext);
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
       {open && (
         <div className="space-y-2 mb-2 text-sm text-white text-right">
-          <Link href="/donate" passHref>
+          <Link href={`/mandal/${slug}/donate`} passHref>
             <Button
               asChild
               variant="glass"
@@ -20,7 +22,7 @@ export default function FloatingButtons() {
               + Donation
             </Button>
           </Link>
-          <Link href="/expense" passHref>
+          <Link href={`/mandal/${slug}/expense`} passHref>
             <Button
               asChild
               variant="glass"

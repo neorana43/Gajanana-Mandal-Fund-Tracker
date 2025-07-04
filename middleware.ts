@@ -44,6 +44,22 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/denied", req.url));
   }
 
+  const url = req.nextUrl.clone();
+
+  // TODO: Replace this with real logic to get the user's current mandal slug
+  // For example, from session, cookie, or database
+  const userMandalSlug = "your-mandal-slug"; // <-- Replace with real logic
+
+  if (url.pathname === "/dashboard") {
+    url.pathname = `/mandal/${userMandalSlug}/dashboard`;
+    return NextResponse.redirect(url);
+  }
+  if (url.pathname === "/donate/list") {
+    url.pathname = `/mandal/${userMandalSlug}/donate/list`;
+    return NextResponse.redirect(url);
+  }
+  // Add more legacy routes as needed
+
   return res;
 }
 

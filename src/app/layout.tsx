@@ -4,8 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import ThemeInitializer from "@/components/theme-initializer"; // ✅ Use client-safe hook
-import MainNavWrapper from "@/components/layouts/MainNavWrapper";
-import Header from "@/components/layouts/Header";
+import ClientLayoutShell from "./layoutShell";
 
 export const metadata: Metadata = {
   title: "Gajanana Mandal Fund Tracker",
@@ -31,11 +30,7 @@ export default function RootLayout({
         className={`${GeistSans.variable} ${GeistMono.variable} font-sans bg-background text-foreground`}
       >
         <ThemeInitializer />
-        <Header />
-        <MainNavWrapper />
-        <main className="pt-20 sm:pt-24 min-h-screen flex flex-col">
-          {children}
-        </main>
+        <ClientLayoutShell>{children}</ClientLayoutShell>
         <Toaster position="top-center" richColors />
       </body>
     </html>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import { createClient } from "@/lib/supabase";
 import {
   Home,
@@ -19,6 +19,7 @@ import { motion } from "framer-motion";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 import { Button } from "@/components/ui/button";
 import { ShareDashboardButton } from "@/components/ShareDashboardButton";
+import { MandalSlugContext } from "@/app/mandal/[slug]/MandalSlugProvider";
 
 type NavItem = {
   href: string;
@@ -30,7 +31,11 @@ type NavItem = {
   type?: "menu";
 };
 
-const navItems = (role: string | null, isLoggedIn: boolean): NavItem[] => {
+const navItemsWithSlug = (
+  role: string | null,
+  isLoggedIn: boolean,
+  slug?: string,
+): NavItem[] => {
   if (!isLoggedIn) {
     return [
       {
@@ -40,16 +45,43 @@ const navItems = (role: string | null, isLoggedIn: boolean): NavItem[] => {
       },
     ];
   }
-
+  // Only show mandal-specific links if slug is present
+  if (!slug) {
+    // Only show global links
+    const items: NavItem[] = [];
+    if (role === "admin") {
+      items.push({
+        href: "/mandal/manage",
+        icon: Landmark,
+        label: "Manage Mandals",
+      });
+    }
+    items.push({
+      href: "#",
+      icon: Menu,
+      label: "Menu",
+      type: "menu",
+    });
+    return items;
+  }
+  const base = slug ? `/mandal/${slug}` : "";
   const baseItems: NavItem[] = [
-    { href: "/dashboard", icon: Home, label: "Home" },
-    { href: "/donate/list", icon: PlusCircle, label: "Donate" },
-    { href: "/expense/list", icon: FileText, label: "Expenses" },
+    { href: `${base}/dashboard`, icon: Home, label: "Home" },
+    { href: `${base}/donate/list`, icon: PlusCircle, label: "Donate" },
+    { href: `${base}/expense/list`, icon: FileText, label: "Expenses" },
   ];
 
   if (role === "admin") {
-    baseItems.push({ href: "/funds/list", icon: Landmark, label: "Funds" });
-    baseItems.push({ href: "/secret/list", icon: Lock, label: "Secret" });
+    baseItems.push({
+      href: `${base}/funds/list`,
+      icon: Landmark,
+      label: "Funds",
+    });
+    baseItems.push({
+      href: `${base}/secret/list`,
+      icon: Lock,
+      label: "Secret",
+    });
   }
 
   baseItems.push({
@@ -70,6 +102,16 @@ export default function MainNav() {
   const [showMenu, setShowMenu] = useState(false);
   const [navShrink, setNavShrink] = useState(false);
   const lastScrollY = useRef(0);
+  let slug = useContext(MandalSlugContext);
+
+  // Fallback: extract slug from pathname if not in context
+  const RESERVED_MANDAL_ROUTES = ["manage", "create", "edit"];
+  if (!slug) {
+    const match = pathname.match(/\/mandal\/([^/]+)/);
+    if (match && !RESERVED_MANDAL_ROUTES.includes(match[1])) {
+      slug = match[1];
+    }
+  }
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -105,6 +147,13 @@ export default function MainNav() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (role === "admin" && !slug && showMenu) {
+      // Fetch all mandals for Go to Mandal dropdown
+      fetch("/api/mandals/list").then((res) => res.json());
+    }
+  }, [role, slug, showMenu]);
+
   return (
     <>
       <nav
@@ -119,7 +168,7 @@ export default function MainNav() {
         role="navigation"
       >
         <ul className="relative flex justify-between items-center px-2 py-0 w-full">
-          {navItems(role, isLoggedIn).map((item) => {
+          {navItemsWithSlug(role, isLoggedIn, slug).map((item) => {
             let isActive = pathname.startsWith(item.href);
             if (item.href === "/dashboard" && pathname === "/dashboard/user") {
               isActive = false;
@@ -181,31 +230,48 @@ export default function MainNav() {
           <div className="glass w-full sm:max-w-sm p-4 rounded-t-xl sm:rounded-xl">
             <h2 className="text-lg font-semibold mb-2">Quick Menu</h2>
             <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/dashboard/user"
-                  onClick={() => setShowMenu(false)}
-                  className="block p-2 rounded hover:bg-muted"
-                >
-                  My Dashboard
-                </Link>
-              </li>
-              {role === "admin" && (
+              {/* Only show mandal-specific links if slug is present */}
+              {slug ? (
                 <>
                   <li>
                     <Link
-                      href="/users/list"
+                      href={`/mandal/${slug}/dashboard/user`}
                       onClick={() => setShowMenu(false)}
                       className="block p-2 rounded hover:bg-muted"
                     >
-                      User List
+                      My Dashboard
                     </Link>
                   </li>
-                  <li className="w-full">
-                    <ShareDashboardButton />
-                  </li>
+                  {role === "admin" && (
+                    <>
+                      <li>
+                        <Link
+                          href={`/mandal/${slug}/users/list`}
+                          onClick={() => setShowMenu(false)}
+                          className="block p-2 rounded hover:bg-muted"
+                        >
+                          User List
+                        </Link>
+                      </li>
+                    </>
+                  )}
                 </>
+              ) : null}
+
+              {role === "admin" && (
+                <li>
+                  <Link
+                    href="/mandal/manage"
+                    onClick={() => setShowMenu(false)}
+                    className="block p-2 rounded hover:bg-muted"
+                  >
+                    Manage Mandals
+                  </Link>
+                </li>
               )}
+              <li className="w-full">
+                <ShareDashboardButton />
+              </li>
             </ul>
             <Button
               onClick={() => setShowMenu(false)}
